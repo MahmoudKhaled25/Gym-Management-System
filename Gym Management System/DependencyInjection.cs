@@ -17,12 +17,22 @@ public static class DependencyInjection
 
         services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));
 
-        services.AddIdentity<ApplicationUser, IdentityRole>()
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
         services.AddMapsterConfig()
             .AddFluentValidationConfig();
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            //options.SignIn.RequireConfirmedAccount = true;
+            options.User.RequireUniqueEmail = true;
+            //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(180);
+        }
+        );
 
         return services;
       }
@@ -42,4 +52,6 @@ public static class DependencyInjection
         return services;
 
     }
+
+
 }

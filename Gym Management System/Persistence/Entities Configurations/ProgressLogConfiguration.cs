@@ -12,6 +12,9 @@ public class ProgressLogConfiguration : IEntityTypeConfiguration<ProgressLog>
         builder.Property(x => x.Weight)
             .HasColumnType("decimal(5,2)");
 
+        builder.Property(x => x.LogDate)
+            .HasDefaultValueSql("CAST(GETUTCDATE() AS DATE)");
+
         builder.HasOne(x => x.User)
             .WithMany(x => x.ProgressLogs)
             .HasForeignKey(x => x.UserId);

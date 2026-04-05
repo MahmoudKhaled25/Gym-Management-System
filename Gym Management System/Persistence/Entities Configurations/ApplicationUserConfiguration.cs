@@ -1,4 +1,5 @@
-﻿using Gym_Management_System.Entities;
+﻿using Gym_Management_System.Abstractions.Consts;
+using Gym_Management_System.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Gym_Management_System.Persistence.Entities_Configurations;
@@ -20,5 +21,23 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 
         builder.Property(x => x.Height)
             .HasColumnType("decimal(5,2)");
+
+        builder.Property(x => x.CreatedAt)
+            .HasDefaultValueSql("GETUTCDATE()");
+
+        builder.HasData(new ApplicationUser
+        {
+            Id = DefaultUsers.AdminId,
+            Email = DefaultUsers.AdminEmail,
+            NormalizedEmail = DefaultUsers.AdminEmail.ToUpper(),
+            UserName = DefaultUsers.AdminEmail,
+            NormalizedUserName = DefaultUsers.AdminEmail.ToUpper(),
+            PasswordHash = DefaultUsers.AdminPasswordHash,
+            SecurityStamp = DefaultUsers.AdminSecurityStamp,
+            ConcurrencyStamp = DefaultUsers.AdminConcurrencyStamp,
+            FirstName = "Admin",
+            LastName = "Admin",
+            EmailConfirmed = true,
+        });
     }
 }

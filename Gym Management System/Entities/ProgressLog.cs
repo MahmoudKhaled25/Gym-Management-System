@@ -8,7 +8,7 @@ public sealed class ProgressLog
 
     public string Notes { get; set; } = string.Empty;
 
-    public DateOnly LogDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    public DateOnly LogDate { get; set; } 
 
 
     // Foreign Keys

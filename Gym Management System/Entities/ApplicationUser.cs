@@ -2,17 +2,13 @@
 
 public class ApplicationUser : IdentityUser
 {
-    public ApplicationUser()
-    {
-        Id = Guid.CreateVersion7().ToString();
-        SecurityStamp = Guid.CreateVersion7().ToString();
-    }
+   
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateOnly DateOfBirth { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } 
 
     // Navigation Properties
 

@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Gym_Management_System.Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<ApplicationUser>(options)
+    : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
 {
     public DbSet<Exercise> Exercises { get; set; }
     public DbSet<MembershipPlan> MembershipPlans { get; set; }
@@ -27,5 +27,18 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             fk.DeleteBehavior = DeleteBehavior.Restrict;
 
         base.OnModelCreating(modelBuilder);
+    }
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker.Entries<ApplicationUser>()
+            .Where(e => e.State == EntityState.Added);
+
+        foreach (var entry in entries)
+        {
+            entry.Entity.Id = Guid.CreateVersion7().ToString();
+            entry.Entity.SecurityStamp = Guid.CreateVersion7().ToString();
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }
