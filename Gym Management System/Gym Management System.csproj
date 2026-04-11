@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Gym_Management_System</RootNamespace>
+    <UserSecretsId>96564f5c-4205-4c0e-8b76-b2642fe98c13</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +26,8 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Contracts\" />
+    <Folder Include="Services\" />
     <Folder Include="Persistence\Migrations\" />
   </ItemGroup>
 
