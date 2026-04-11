@@ -1,0 +1,40 @@
+﻿using Gym_Management_System.Abstractions;
+
+namespace Gym_Management_System.Errors;
+
+
+public record UserErrors
+{
+    public static readonly Error InvalidCredentials =
+       new("User.InvalidCredentials", "Invalid email/password", StatusCodes.Status401Unauthorized);
+
+    public static readonly Error InvalidJwtToken =
+        new("User.InvalidJwtToken", "Invalid Jwt token", StatusCodes.Status401Unauthorized);
+
+    public static readonly Error InvalidRefreshToken =
+        new("User.InvalidRefreshToken", "Invalid refresh token", StatusCodes.Status401Unauthorized);
+
+    public static readonly Error LockedUser =
+       new("User.LockedUser", "Locked User / Please Contact Your Administrator", StatusCodes.Status401Unauthorized);
+    public static readonly Error DuplicatedEmail =
+        new("User.DuplicatedEmail", "Another user with the same email is already exists", StatusCodes.Status409Conflict);
+
+    public static readonly Error EmailNotConfirmed =
+    new("User.EmailNotConfirmed", "Email Is Not Confirmed", StatusCodes.Status401Unauthorized);
+
+    public static readonly Error InvalidCode =
+   new("User.InvalidCode", "InvalidCode", StatusCodes.Status401Unauthorized);
+
+    public static readonly Error DuplicatedConfirmation =
+  new("User.DuplicatedConfirmation", "Email Already Confirmed", StatusCodes.Status400BadRequest);
+
+    public static readonly Error DisabledUser =
+       new("User.DisabledUser", "Disabled User / Please Contact Your Administrator", StatusCodes.Status401Unauthorized);
+
+    public static readonly Error UserNotFound =
+   new("User.UserNotFound", "User Not Found", StatusCodes.Status404NotFound);
+
+    public static readonly Error InvalidRoles =
+       new("User.InvalidRoles", "Invalid Roles", StatusCodes.Status400BadRequest);
+}
+

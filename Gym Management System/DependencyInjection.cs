@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Gym_Management_System.Authentication;
 using Gym_Management_System.Entities;
 using Gym_Management_System.Persistence;
+using Gym_Management_System.Services;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,9 +27,9 @@ public static class DependencyInjection
         services.AddMapsterConfig()
             .AddFluentValidationConfig();
 
+        services.AddScoped<IAuthService, AuthService>();
 
 
-       
 
         return services;
       }
@@ -95,6 +96,7 @@ public static class DependencyInjection
             //options.SignIn.RequireConfirmedAccount = true;
             options.User.RequireUniqueEmail = true;
             //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(180);
+            
         }
        );
 

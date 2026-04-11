@@ -1,0 +1,23 @@
+﻿using Gym_Management_System.Abstractions;
+using Gym_Management_System.Contracts.Auth;
+using Gym_Management_System.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Gym_Management_System.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AuthController(IAuthService authService,ILogger<AuthController> logger) : ControllerBase
+{
+    private readonly IAuthService _authService = authService;
+    private readonly ILogger<AuthController> _logger = logger;
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody]LoginRequest request,CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Logging with email: {email} and password {password}", request.Email, request.Password);
+        var result = await _authService.GetTokenAsync(request, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+}
