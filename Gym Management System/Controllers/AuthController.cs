@@ -36,4 +36,11 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
         var result = await _authService.SendResetPasswordCodeAsync(request, cancellationToken);
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Resetting password for email: {email}", request.Email);
+        var result = await _authService.ResetPasswordAsync(request, cancellationToken);
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
 }

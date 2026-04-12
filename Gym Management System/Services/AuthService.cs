@@ -54,6 +54,7 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
         return Result.Success();
     }
 
+
     public async Task<Result> SendResetPasswordCodeAsync(ForgetPasswordRequest request, CancellationToken cancellationToken = default)
     {
         if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
@@ -68,6 +69,30 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
 
         // to do : send the code to the user's email using an email service
         return Result.Success();
+    }
+
+    public async Task<Result> ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default)
+    {
+        if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
+            return Result.Failure(UserErrors.InvalidCredentials);
+
+        IdentityResult identityResult;
+
+        try
+        {
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Code));
+            identityResult = await _userManager.ResetPasswordAsync(user, code, request.NewPassword);
+
+        }
+        catch
+        {
+            identityResult = IdentityResult.Failed(_userManager.ErrorDescriber.InvalidToken());
+        }
+        if (identityResult.Succeeded)
+            return Result.Success();
+            
+        var error = identityResult.Errors.First();
+        return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status401Unauthorized));
 
     }
 }
