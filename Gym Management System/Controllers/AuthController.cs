@@ -20,4 +20,13 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
         var result = await _authService.GetTokenAsync(request, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Registering with email: {email} and password {password}", request.Email, request.Password);
+        // to do : Confirmation password 
+        var result = await _authService.RegisterAsync(request, cancellationToken);
+        return result.IsSuccess ? Created() : result.ToProblem();
+    }
 }

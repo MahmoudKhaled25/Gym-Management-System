@@ -6,4 +6,8 @@ namespace Gym_Management_System.Services;
 public interface IAuthService
 {
     Task<Result<AuthResponse>> GetTokenAsync(LoginRequest request,CancellationToken cancellationToken = default!);
+
+    // to do : add refresh token method
+
+    Task<Result> RegisterAsync(RegisterRequest request,CancellationToken cancellationToken = default!);
 }
