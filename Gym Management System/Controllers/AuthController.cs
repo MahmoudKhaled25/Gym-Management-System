@@ -29,4 +29,11 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
         var result = await _authService.RegisterAsync(request, cancellationToken);
         return result.IsSuccess ? Created() : result.ToProblem();
     }
+    [HttpPost("forget-password")]
+    public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Requesting password reset for email: {email}", request.Email);
+        var result = await _authService.SendResetPasswordCodeAsync(request, cancellationToken);
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
 }

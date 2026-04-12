@@ -4,14 +4,17 @@ using Gym_Management_System.Authentication;
 using Gym_Management_System.Contracts.Auth;
 using Gym_Management_System.Errors;
 using Mapster;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace Gym_Management_System.Services;
 
-public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider jwtProvider,SignInManager<ApplicationUser> signInManager) : IAuthService
+public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider jwtProvider,SignInManager<ApplicationUser> signInManager,ILogger<AuthService> logger) : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly ILogger<AuthService> _logger = logger;
 
     public async Task<Result<AuthResponse>> GetTokenAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
@@ -49,5 +52,22 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
         await _userManager.AddToRoleAsync(user, DefaultRoles.Member.Name);
 
         return Result.Success();
+    }
+
+    public async Task<Result> SendResetPasswordCodeAsync(ForgetPasswordRequest request, CancellationToken cancellationToken = default)
+    {
+        if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
+                return Result.Success();
+
+        //if (!user.EmailConfirmed)
+        //    return Result.Failure(UserErrors.EmailNotConfirmed with { StatusCode = StatusCodes.Status400BadRequest });
+
+        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        _logger.LogInformation("Password reset code generated for user {Email}: {Code}", user.Email, code);
+
+        // to do : send the code to the user's email using an email service
+        return Result.Success();
+
     }
 }

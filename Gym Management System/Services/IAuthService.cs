@@ -10,4 +10,6 @@ public interface IAuthService
     // to do : add refresh token method
 
     Task<Result> RegisterAsync(RegisterRequest request,CancellationToken cancellationToken = default!);
+
+    Task<Result> SendResetPasswordCodeAsync(ForgetPasswordRequest request,CancellationToken cancellationToken = default!);
 }
