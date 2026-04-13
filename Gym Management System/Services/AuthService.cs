@@ -23,7 +23,7 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
         if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
             return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);
         // check if the password is correct
-        var result = await _signInManager.PasswordSignInAsync(user, request.Password, false,false);
+        var result = await _signInManager.PasswordSignInAsync(user, request.Password, false,true);
 
 
         if (result.Succeeded)

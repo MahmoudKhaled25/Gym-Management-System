@@ -28,6 +28,7 @@ public static class DependencyInjection
             .AddFluentValidationConfig();
 
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAccountService, AccountService>();
 
 
 
@@ -62,6 +63,11 @@ public static class DependencyInjection
         var jwtSettings = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ??
             throw new InvalidOperationException($"Failed to bind JWT settings from configuration section '{JwtOptions.SectionName}'.");
 
+
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -81,21 +87,13 @@ public static class DependencyInjection
             };
         });
 
-
-
-        services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
-
-
         services.Configure<IdentityOptions>(options =>
         {
             options.Password.RequiredLength = 8;
             options.Lockout.MaxFailedAccessAttempts = 5;
             //options.SignIn.RequireConfirmedAccount = true;
             options.User.RequireUniqueEmail = true;
-            //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(180);
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(20);
             
         }
        );
