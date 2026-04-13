@@ -27,6 +27,13 @@ public class AccountController(IAccountService accountService) : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var result = await _accountService.UpdateProfileAsync(userId!, request, cancellationToken);
-        return result.IsSuccess ? Ok() : result.ToProblem();
+        return result.IsSuccess ? NoContent(): result.ToProblem();
+    }
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangeUserPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _accountService.ChangePasswordAsync(userId!, request, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 }
