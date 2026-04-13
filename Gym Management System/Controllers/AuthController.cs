@@ -20,6 +20,13 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
         var result = await _authService.GetTokenAsync(request, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Refreshing token for user with token: {token}", request.Token);
+        var result = await _authService.GetRefreshTokenAsync(request, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)

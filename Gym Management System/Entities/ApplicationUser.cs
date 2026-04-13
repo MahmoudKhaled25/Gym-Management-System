@@ -16,5 +16,6 @@ public class ApplicationUser : IdentityUser
     public ICollection<Subscription> Subscriptions { get; set; } = [];
     public ICollection<ProgressLog> ProgressLogs { get; set; } = [];
     public ICollection<WorkoutPlan> WorkoutPlans { get; set; } = [];
+    public List<RefreshToken> RefreshTokens { get; set; } = [];
 
 }

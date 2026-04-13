@@ -8,5 +8,7 @@ public record AuthResponse
     string LastName,
     string Token,
     int ExpiresIn,
-    IEnumerable<string> Roles
+    IEnumerable<string> Roles,
+    string RefreshToken,
+    DateTime RefreshTokenExpiration
 );

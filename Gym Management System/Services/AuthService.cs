@@ -5,6 +5,7 @@ using Gym_Management_System.Contracts.Auth;
 using Gym_Management_System.Errors;
 using Mapster;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Gym_Management_System.Services;
@@ -29,12 +30,61 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
         {
             var roles =  await _userManager.GetRolesAsync(user);
             var (token, expiresIn) = _jwtProvider.GenerateToken(user, roles);
+            var refreshToken = GenerateRefreshToken();
+            var refreshTokenExpiration = DateTime.UtcNow.AddDays(7);
 
-            var response = new AuthResponse(user.Id, user.Email!, user.FirstName, user.LastName, token, expiresIn, roles);
+            user.RefreshTokens.Add(new RefreshToken
+            {
+                Token = refreshToken,
+                ExpiresOn = refreshTokenExpiration
+            });
+            await _userManager.UpdateAsync(user);
+
+            var response = new AuthResponse(user.Id, user.Email!, user.FirstName, user.LastName, token, expiresIn, roles,refreshToken,refreshTokenExpiration);
             return Result.Success(response);
         }
         var error = result.IsLockedOut ? UserErrors.LockedUser : UserErrors.InvalidCredentials;
         return Result.Failure<AuthResponse>(error);
+    }
+
+
+    public async Task<Result<AuthResponse>> GetRefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default)
+    {
+        var userId = _jwtProvider.ValidateToken(request.Token);
+
+        if (userId is null)
+            return Result.Failure<AuthResponse>(UserErrors.InvalidJwtToken);
+
+        var user = await _userManager.Users
+                  .Include(u => u.RefreshTokens)
+                  .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user is null)
+            return Result.Failure<AuthResponse>(UserErrors.UserNotFound);
+
+        // to do : Added IsDisabled check for the user
+
+        if (user.LockoutEnd > DateTime.UtcNow)
+          return Result.Failure<AuthResponse>(UserErrors.LockedUser);
+
+        var userRefreshToken = user.RefreshTokens.FirstOrDefault(rt => rt.Token == request.RefreshToken && rt.IsActive);
+        if (userRefreshToken is null)
+            return Result.Failure<AuthResponse>(UserErrors.InvalidRefreshToken);
+
+        userRefreshToken.RevokedOn = DateTime.UtcNow;
+        var roles = await _userManager.GetRolesAsync(user);
+        var (token, expiresIn) = _jwtProvider.GenerateToken(user,roles );
+        var newRefreshToken = GenerateRefreshToken();
+        var newRefreshTokenExpiration = DateTime.UtcNow.AddDays(7);
+        user.RefreshTokens.Add(new RefreshToken
+        {
+            Token = newRefreshToken,
+            ExpiresOn = newRefreshTokenExpiration
+        });
+                await _userManager.UpdateAsync(user);
+        var response = new AuthResponse(user.Id, user.Email!, user.FirstName, user.LastName, token, expiresIn,roles,newRefreshToken,newRefreshTokenExpiration);
+        return Result.Success(response);
+
     }
 
     public async Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -53,7 +103,6 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
 
         return Result.Success();
     }
-
 
     public async Task<Result> SendResetPasswordCodeAsync(ForgetPasswordRequest request, CancellationToken cancellationToken = default)
     {
@@ -95,4 +144,11 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status401Unauthorized));
 
     }
+
+
+    private static string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    }
+   
 }

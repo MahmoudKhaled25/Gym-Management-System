@@ -39,5 +39,13 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             LastName = "Admin",
             EmailConfirmed = true,
         });
+
+        builder.OwnsMany(x => x.RefreshTokens, rt =>
+        {
+            rt.ToTable("RefreshTokens");
+            rt.WithOwner().HasForeignKey("UserId");
+            rt.HasKey("Id");
+
+        });
     }
 }
