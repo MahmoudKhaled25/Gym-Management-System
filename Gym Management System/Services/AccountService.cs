@@ -2,7 +2,6 @@
 using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
-using Mapster;
 
 namespace Gym_Management_System.Services;
 
@@ -27,6 +26,21 @@ public class AccountService(ApplicationDbContext context,UserManager<Application
 
     }
 
+    public async Task<Result> UpdateProfileAsync(string userId, UpdateUserProfileRequest request, CancellationToken cancellationToken = default)
+    {
 
+        var user = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user == null)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        request.Adapt(user);
+
+        await _userManager.UpdateAsync(user);
+
+        return Result.Success();
+
+    }
 
 }
