@@ -20,4 +20,16 @@ public class MemberController(IMemberService memberService) : ControllerBase
         var result = await _memberService.GetAllMembersAsync();
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
+    [HttpGet("active-members")]
+    public async Task<IActionResult> GetActiveMembers()
+    {
+        var result = await _memberService.GetActiveMembersAsync();
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetMemberById([FromRoute] string id,CancellationToken cancellationToken)
+    {
+        var result = await _memberService.GetMembersAsync(id,cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
 }

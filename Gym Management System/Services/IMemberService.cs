@@ -8,7 +8,7 @@ public interface IMemberService
 {
     Task<Result<IEnumerable<UserProfileResponse>>> GetAllMembersAsync();
 
-    Task<Result<IEnumerable<UserProfileResponse>>> GetActiveMembersAsync(string memberId, CancellationToken cancellationToken = default!);
+    Task<Result<IEnumerable<UserProfileResponse>>> GetActiveMembersAsync();
 
 
     Task<Result<UserProfileResponse>> GetMembersAsync(string memberId,CancellationToken cancellationToken = default!);
