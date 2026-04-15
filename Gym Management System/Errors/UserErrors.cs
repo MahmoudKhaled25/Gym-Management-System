@@ -36,5 +36,8 @@ public record UserErrors
 
     public static readonly Error InvalidRoles =
        new("User.InvalidRoles", "Invalid Roles", StatusCodes.Status400BadRequest);
+
+    public static readonly Error UpdateFailed =
+      new("User.UpdateFailed", "Update Failed", StatusCodes.Status400BadRequest);
 }
 
