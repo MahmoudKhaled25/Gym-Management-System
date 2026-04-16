@@ -13,4 +13,8 @@ public interface ITrainerService
     Task<Result<GetTrainerResponse>> GetTrainerByIdAsync(string trainerId, CancellationToken cancellationToken = default);
 
     Task<Result<GetTrainerResponse>> AddTrainerAsync(AddTrainerRequest request, CancellationToken cancellationToken = default);
+
+    Task<Result> UpdateTrainerAsync(string trainerId,UpdateTrainerRequest request, CancellationToken cancellationToken = default);
+
+    Task<Result> ToggleStatusAsync(string trainerId,CancellationToken cancellationToken = default);
 }

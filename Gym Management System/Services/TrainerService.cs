@@ -155,5 +155,40 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
         }
     }
 
-   
+    public async Task<Result> UpdateTrainerAsync(string trainerId, UpdateTrainerRequest request, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.Users
+            .Include(u => u.Trainer)
+            .FirstOrDefaultAsync(u => u.Id == trainerId, cancellationToken);
+
+        if (user is null)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        request.Adapt(user);
+        if (user.Trainer != null)
+        {
+            user.Trainer.Specialization = request.Specialization;
+        }
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+            return Result.Failure(UserErrors.UpdateFailed);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ToggleStatusAsync(string trainerId, CancellationToken cancellationToken = default)
+    {
+        var trainer = await _context.Trainers
+            .FirstOrDefaultAsync(t => t.UserId == trainerId, cancellationToken);
+
+        if (trainer is null)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        trainer.IsActive = !trainer.IsActive;
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
 }
