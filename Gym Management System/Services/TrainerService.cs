@@ -46,9 +46,26 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
         return Result.Success(response);
     }
 
+    public async Task<Result<GetTrainerResponse>> GetTrainerByIdAsync(string trainerId, CancellationToken cancellationToken = default)
+    {
+        var trainer = await _userManager.Users.Include(x => x.Trainer).FirstOrDefaultAsync(u => u.Id == trainerId, cancellationToken);
+        if(trainer == null)
+            return Result.Failure<GetTrainerResponse>(UserErrors.UserNotFound);
 
+        var roles = await _userManager.GetRolesAsync(trainer);
 
-    public async Task<Result> AddTrainerAsync(AddTrainerRequest request, CancellationToken cancellationToken = default)
+        var response = new GetTrainerResponse(
+            trainer.Id,
+            trainer.FirstName,
+            trainer.LastName,
+            trainer.Trainer!.Specialization,
+            trainer.Trainer.IsActive,
+            roles
+        );
+        return Result.Success(response);
+    }
+
+    public async Task<Result<GetTrainerResponse>> AddTrainerAsync(AddTrainerRequest request, CancellationToken cancellationToken = default)
     {
         using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
         try
@@ -69,13 +86,13 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
                 var error = result.Errors.Any(e => e.Code == "DuplicateEmail")
                             ? UserErrors.DuplicatedEmail
                             : UserErrors.InvalidCredentials;
-                return Result.Failure<UserProfileResponse>(error);
+                return Result.Failure<GetTrainerResponse>(error);
             }
             var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.Trainer.Name);
             if (!roleResult.Succeeded)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return Result.Failure(UserErrors.InvalidRoles);
+                return Result.Failure<GetTrainerResponse>(UserErrors.InvalidRoles);
                     
             }
             var trainer = new Trainer
@@ -88,14 +105,25 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
             await _context.Trainers.AddAsync(trainer, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
-            return Result.Success();
+
+            var response = new GetTrainerResponse(
+                user.Id,
+                user.FirstName,
+                user.LastName,
+                trainer.Specialization,
+                trainer.IsActive,
+                new List<string> { DefaultRoles.Trainer.Name }
+            );
+
+            return Result.Success(response);
 
         }
         catch {
             await transaction.RollbackAsync(cancellationToken);
-            return Result.Failure(UserErrors.UpdateFailed);
+            return Result.Failure<GetTrainerResponse>(UserErrors.UpdateFailed);
 
         }
     }
 
+  
 }

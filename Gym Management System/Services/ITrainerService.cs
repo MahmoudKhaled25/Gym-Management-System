@@ -8,6 +8,7 @@ public interface ITrainerService
 {
     Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainers();
 
+    Task<Result<GetTrainerResponse>> GetTrainerByIdAsync(string trainerId, CancellationToken cancellationToken = default);
 
-    Task<Result> AddTrainerAsync(AddTrainerRequest request, CancellationToken cancellationToken = default);
+    Task<Result<GetTrainerResponse>> AddTrainerAsync(AddTrainerRequest request, CancellationToken cancellationToken = default);
 }

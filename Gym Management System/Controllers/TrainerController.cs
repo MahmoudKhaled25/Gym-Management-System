@@ -19,11 +19,17 @@ public class TrainerController(ITrainerService trainerService) : ControllerBase
         var result = await _trainerService.GetAllTrainers();
         return Ok(result.Value);
     }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetTrainerById([FromRoute]string id, CancellationToken cancellationToken = default)
+    {
+        var result = await _trainerService.GetTrainerByIdAsync(id, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
 
     [HttpPost("")]
     public async Task<IActionResult> AddTrainer([FromBody] AddTrainerRequest request)
     {
         var result = await _trainerService.AddTrainerAsync(request);
-        return result.IsSuccess ? Created(): result.ToProblem();
+        return result.IsSuccess ? CreatedAtAction(nameof(GetTrainerById), new {Id = result.Value!.Id}, result.Value) : result.ToProblem();
     }
 }
