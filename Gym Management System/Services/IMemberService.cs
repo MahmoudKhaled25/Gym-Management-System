@@ -11,7 +11,7 @@ public interface IMemberService
     Task<Result<IEnumerable<UserProfileResponse>>> GetActiveMembersAsync();
 
 
-    Task<Result<UserProfileResponse>> GetMembersAsync(string memberId,CancellationToken cancellationToken = default!);
+    Task<Result<UserProfileResponse>> GetMemberAsync(string memberId,CancellationToken cancellationToken = default!);
 
     Task<Result<UserProfileResponse>> AddMemberAsync(AddMemberRequest request, CancellationToken cancellationToken = default!);
 

@@ -15,94 +15,113 @@ public class MemberService(UserManager<ApplicationUser> userManager,SignInManage
 
     public async Task<Result<IEnumerable<UserProfileResponse>>> GetAllMembersAsync()
     {
-        var users = await _userManager.Users
-        .Include(x => x.Trainer)
-        .ToListAsync();
+        var membersData = await _context.Users
+            .Where(u => _context.UserRoles
+                .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name }) 
+                .Any(x => x.UserId == u.Id && x.Name == DefaultRoles.Member.Name)) 
+            .Select(u => new
+            {
+                u.Id,
+                u.Email,
+                u.FirstName,
+                u.LastName,
+                u.DateOfBirth,
+                u.Weight,
+                u.Height,
+                Roles = _context.UserRoles
+                    .Where(ur => ur.UserId == u.Id)
+                    .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                    .ToList()
+            })
+            .ToListAsync();
 
-        var response = new List<UserProfileResponse>();
-
-        foreach (var user in users)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            response.Add(new UserProfileResponse(
-                user.Id,
-                user.Email!,
-                user.FirstName,
-                user.LastName,
-                user.DateOfBirth,
-                user.Weight,
-                user.Height,
-                user.Trainer == null ? null : new TrainerResponse(
-                    user.Trainer.ApplicationUser!.FirstName,
-                    user.Trainer.ApplicationUser.LastName,
-                    user.Trainer.Specialization,
-                    user.Trainer.IsActive
-                ),
-                roles
-            ));
-        }
+        var response = membersData.Select(m => new UserProfileResponse(
+            m.Id,
+            m.Email!,
+            m.FirstName,
+            m.LastName,
+            m.DateOfBirth,
+            m.Weight,
+            m.Height,
+            m.Roles!
+        ));
 
         return Result.Success(response.AsEnumerable());
+
     }
-
-    
-
-
 
     public async Task<Result<IEnumerable<UserProfileResponse>>> GetActiveMembersAsync()
     {
-        var activeMembers = await _userManager.Users.Include(x => x.Trainer)
-            .Where(u => u.LockoutEnd == null || u.LockoutEnd <= DateTimeOffset.UtcNow)
+        var membersData = await _context.Users
+                    .Where(u => _context.UserRoles.Join(_context.Roles,ur => ur.RoleId ,r => r.Id,(ur,r) => new {ur.UserId,r.Name})
+                                                   .Any(x => x.UserId == u.Id  && x.Name == DefaultRoles.Member.Name) && (u.LockoutEnd == null || u.LockoutEnd <= DateTimeOffset.UtcNow)) // to do : Make it works for subscription
+                    .Select(u => new
+            {
+                u.Id,
+                u.Email,
+                u.FirstName,
+                u.LastName,
+                u.DateOfBirth,
+                u.Weight,
+                u.Height,
+                Roles = _context.UserRoles
+                    .Where(ur => ur.UserId == u.Id)
+                    .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                    .ToList()
+            })
             .ToListAsync();
 
-        var response = new List<UserProfileResponse>();
+        var response = membersData.Select(m => new UserProfileResponse(
+            m.Id,
+            m.Email!,
+            m.FirstName,
+            m.LastName,
+            m.DateOfBirth,
+            m.Weight,
+            m.Height,
+            m.Roles!
+        ));
 
-        foreach(var activeMember in activeMembers)
-        {
-            var roles = await _userManager.GetRolesAsync(activeMember);
-            response.Add(new UserProfileResponse(
-                activeMember.Id,
-                activeMember.Email!,
-                activeMember.FirstName,
-                activeMember.LastName,
-                activeMember.DateOfBirth,
-                activeMember.Weight,
-                activeMember.Height,
-                activeMember.Trainer == null ? null : new TrainerResponse(
-                    activeMember.Trainer.ApplicationUser!.FirstName,
-                    activeMember.Trainer.ApplicationUser.LastName,
-                    activeMember.Trainer.Specialization,
-                    activeMember.Trainer.IsActive
-                ),
-                roles
-            ));
-
-        }
         return Result.Success(response.AsEnumerable());
 
     }
-    public async Task<Result<UserProfileResponse>> GetMembersAsync(string memberId, CancellationToken cancellationToken = default)
+    public async Task<Result<UserProfileResponse>> GetMemberAsync(string memberId, CancellationToken cancellationToken = default)
     {
-        var user = await _userManager.Users.Include(x => x.Trainer).FirstOrDefaultAsync(u => u.Id == memberId, cancellationToken);
-        if (user is null)
+        var memberData = await _context.Users
+                   .Where(u => u.Id == memberId && 
+                               _context.UserRoles
+                                   .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })
+                                   .Any(x => x.UserId == u.Id && x.Name == DefaultRoles.Member.Name))
+                   .Select(u => new
+                   {
+                       u.Id,
+                       u.Email,
+                       u.FirstName,
+                       u.LastName,
+                       u.DateOfBirth,
+                       u.Weight,
+                       u.Height,
+                       Roles = _context.UserRoles
+                           .Where(ur => ur.UserId == u.Id)
+                           .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                           .ToList()
+                   })
+                   .FirstOrDefaultAsync(cancellationToken); 
+
+        if (memberData is null)
             return Result.Failure<UserProfileResponse>(UserErrors.UserNotFound);
 
-       var response = new UserProfileResponse(
-            user.Id,
-            user.Email!,
-            user.FirstName,
-            user.LastName,
-            user.DateOfBirth,
-            user.Weight,
-            user.Height,
-            user.Trainer == null ? null : new TrainerResponse(
-                user.Trainer.ApplicationUser!.FirstName,
-                user.Trainer.ApplicationUser.LastName,
-                user.Trainer.Specialization,
-                user.Trainer.IsActive
-            ),
-            await _userManager.GetRolesAsync(user)
+        var response = new UserProfileResponse(
+            memberData.Id,
+            memberData.Email!,
+            memberData.FirstName,
+            memberData.LastName,
+            memberData.DateOfBirth,
+            memberData.Weight,
+            memberData.Height,
+            memberData.Roles!
         );
+
         return Result.Success(response);
     }
 
@@ -148,7 +167,6 @@ public class MemberService(UserManager<ApplicationUser> userManager,SignInManage
                 user.DateOfBirth,
                 user.Weight,
                 user.Height,
-                null,
                 new List<string> { DefaultRoles.Member.Name }
             );
              return Result.Success(response);

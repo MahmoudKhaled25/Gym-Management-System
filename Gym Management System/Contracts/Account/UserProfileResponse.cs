@@ -8,13 +8,12 @@ public record UserProfileResponse(
     DateOnly DateOfBirth,
     float Weight,
     float Height,
-    TrainerResponse? Trainer,
     IEnumerable<string> Roles
 );
 
-public record TrainerResponse(
-    string FirstName,
-    string LastName,
-    string Specialization,
-    bool IsActive
-);
+//public record TrainerResponse(
+//    string FirstName,
+//    string LastName,
+//    string Specialization,
+//    bool IsActive
+//);

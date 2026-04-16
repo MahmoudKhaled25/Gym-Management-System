@@ -30,7 +30,7 @@ public class MemberController(IMemberService memberService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMemberById([FromRoute] string id,CancellationToken cancellationToken)
     {
-        var result = await _memberService.GetMembersAsync(id,cancellationToken);
+        var result = await _memberService.GetMemberAsync(id,cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     [HttpPost("")]
