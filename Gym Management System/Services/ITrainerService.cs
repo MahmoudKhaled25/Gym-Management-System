@@ -6,7 +6,9 @@ namespace Gym_Management_System.Services;
 
 public interface ITrainerService
 {
-    Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainers();
+    Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainersAsync();
+
+    Task<Result<IEnumerable<GetTrainerResponse>>> GetActiveTrainersAsync();
 
     Task<Result<GetTrainerResponse>> GetTrainerByIdAsync(string trainerId, CancellationToken cancellationToken = default);
 

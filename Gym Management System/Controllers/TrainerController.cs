@@ -16,7 +16,14 @@ public class TrainerController(ITrainerService trainerService) : ControllerBase
     [HttpGet("")]
   public async Task<IActionResult> GetAllTrainers()
     {
-        var result = await _trainerService.GetAllTrainers();
+        var result = await _trainerService.GetAllTrainersAsync();
+        return Ok(result.Value);
+    }
+
+    [HttpGet("active-trainers")]
+    public async Task<IActionResult> GetActiveTrainers()
+    {
+        var result = await _trainerService.GetActiveTrainersAsync();
         return Ok(result.Value);
     }
     [HttpGet("{id}")]

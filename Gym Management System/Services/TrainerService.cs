@@ -15,7 +15,7 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
 
 
 
-    public async Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainers()
+    public async Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainersAsync()
     {
         var trainersData = await _context.Users
             .Include(u => u.Trainer)
@@ -44,6 +44,36 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
         ));
 
         return Result.Success(response);
+    }
+
+    public async Task<Result<IEnumerable<GetTrainerResponse>>> GetActiveTrainersAsync()
+    {
+        var activeTrainers = await _context.Users
+            .Include(x => x.Trainer)
+            .Where(x => x.Trainer != null && x.Trainer.IsActive == true)
+            .Select(x => new
+            {
+                x.Id,
+                x.FirstName,
+                x.LastName,
+                x.Trainer!.Specialization,
+                x.Trainer.IsActive,
+                Roles = _context.UserRoles.Where(ur => ur.UserId == x.Id)
+                    .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                    .ToList()
+            }).ToListAsync();
+
+        var response = activeTrainers.Select(t => new GetTrainerResponse(
+           t.Id,
+           t.FirstName,
+           t.LastName,
+           t.Specialization,
+           t.IsActive,
+           t.Roles!
+       ));
+
+        return Result.Success(response);
+
     }
 
     public async Task<Result<GetTrainerResponse>> GetTrainerByIdAsync(string trainerId, CancellationToken cancellationToken = default)
@@ -125,5 +155,5 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
         }
     }
 
-  
+   
 }
