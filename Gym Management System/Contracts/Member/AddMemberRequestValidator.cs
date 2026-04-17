@@ -19,10 +19,12 @@ public class AddMemberRequestValidator : AbstractValidator<AddMemberRequest>
 
         RuleFor(x => x.FirstName)
            .NotEmpty().WithMessage("First name is required.")
+                       .Must(name => !string.IsNullOrWhiteSpace(name))
            .MaximumLength(100).WithMessage("First name cannot exceed 100 characters.");
 
         RuleFor(x => x.LastName)
             .NotEmpty().WithMessage("Last name is required.")
+                        .Must(name => !string.IsNullOrWhiteSpace(name))
             .MaximumLength(100).WithMessage("Last name cannot exceed 100 characters.");
 
         RuleFor(x => x.DateOfBirth)

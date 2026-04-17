@@ -8,10 +8,14 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     public RegisterRequestValidator()
     {
         RuleFor(x => x.FirstName)
-            .NotEmpty().Length(3, 100);
+            .NotEmpty()
+            .Must(desc => !string.IsNullOrWhiteSpace(desc))
+            .Length(3, 100);
 
         RuleFor(x => x.LastName)
-            .NotEmpty().Length(3, 100);
+            .NotEmpty()
+            .Must(desc => !string.IsNullOrWhiteSpace(desc))
+            .Length(3, 100);
 
         RuleFor(x => x.Email)
             .NotEmpty()
