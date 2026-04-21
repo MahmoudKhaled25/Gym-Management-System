@@ -52,4 +52,11 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         var result = await _subscriptionService.AddAsync(userId!,request , cancellationToken);
         return result.IsSuccess ? Created() : result.ToProblem();
     }
+    [HttpPut("{id}")]
+    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    public async Task<IActionResult> Cancel([FromRoute]int id, CancellationToken cancellationToken)
+    {
+        var result = await _subscriptionService.CancelAsync(id, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
 }

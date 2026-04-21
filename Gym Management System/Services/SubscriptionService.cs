@@ -130,9 +130,16 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
         return Result.Success();
     }
 
-    public Task<Result> CancelAsync(int id, CancellationToken cancellationToken)
+    public async Task<Result> CancelAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(s => s.Id == id);
+        if (subscription is null)
+            return Result.Failure(SubscriptionErrors.SubscriptionNotFound);
+
+        subscription.Status = SubscriptionStatus.Cancelled;
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+
     }
 
    
