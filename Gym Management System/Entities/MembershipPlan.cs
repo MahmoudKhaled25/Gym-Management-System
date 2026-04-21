@@ -9,6 +9,8 @@ public sealed class MembershipPlan
     public int DurationInDays { get; set; }
     public bool IsActive { get; set; } = true;
 
+    public int? SessionsPerMonth { get; set; }
+
     public ICollection<Subscription> Subscriptions { get; set; } = [];
 
     
