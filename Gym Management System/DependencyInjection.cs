@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Gym_Management_System;
 
@@ -23,6 +24,12 @@ public static class DependencyInjection
            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
         services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));
+
+        services.AddControllers()
+        .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
         services.AddMapsterConfig()
             .AddFluentValidationConfig();

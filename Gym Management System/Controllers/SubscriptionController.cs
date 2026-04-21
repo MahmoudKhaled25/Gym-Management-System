@@ -1,4 +1,5 @@
-﻿using Gym_Management_System.Services;
+﻿using Gym_Management_System.Contracts.Subscription;
+using Gym_Management_System.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -42,5 +43,13 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var result = await _subscriptionService.GetMySubscriptionAsync(userId!, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+    [HttpPost("")]
+    [Authorize(Roles = DefaultRoles.Member.Name)]
+    public async Task<IActionResult> Add(SubscriptionRequest request,CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _subscriptionService.AddAsync(userId!,request , cancellationToken);
+        return result.IsSuccess ? Created() : result.ToProblem();
     }
 }
