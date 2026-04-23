@@ -6,6 +6,7 @@ public sealed class Exercise
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 
+    public bool IsActive { get; set; } = true;
     public string MuscleGroup { get; set; } = string.Empty;
 
     // Foreign Keys

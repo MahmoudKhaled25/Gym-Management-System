@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Gym_Management_System</RootNamespace>
+    <RootNamespace>GymManagementSystem</RootNamespace>
     <UserSecretsId>96564f5c-4205-4c0e-8b76-b2642fe98c13</UserSecretsId>
   </PropertyGroup>
 
@@ -14,12 +14,16 @@
     <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="Mapster" Version="10.0.7" />
     <PackageReference Include="Mapster.DependencyInjection" Version="10.0.7" />
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.6" />
-	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.6" />
-	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.6" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.6" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.6">
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.7" />
+	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
