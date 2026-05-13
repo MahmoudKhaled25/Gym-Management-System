@@ -12,4 +12,6 @@ public interface IWorkoutPlanService
 
     Task<Result> UpdateAsync(int id, WorkoutPlanRequest request, CancellationToken cancellationToken = default!);
 
+    Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default!);
+
 }

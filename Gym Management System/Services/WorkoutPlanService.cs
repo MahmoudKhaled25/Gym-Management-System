@@ -83,6 +83,17 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
 
 
     }
+    public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var workoutPlan = await _context.WorkoutPlans
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (workoutPlan is null)
+            return Result.Failure(WorkoutPlanErrors.WorkoutPlanNotFound);
+
+                _context.WorkoutPlans.Remove(workoutPlan);
+                await _context.SaveChangesAsync(cancellationToken);
+                return Result.Success();
+    }
     private async Task<Result> ValidateMemberAndTrainerAsync(string memberId,string? trainerId,CancellationToken cancellationToken)
     {
         var memberExists = await _context.Users
@@ -101,4 +112,5 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
         return Result.Success();
     }
 
+   
 }

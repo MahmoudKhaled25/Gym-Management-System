@@ -47,4 +47,11 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
         var result = await _workoutPlanService.UpdateAsync(id, request, cancellationToken);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
+    [HttpDelete("{id}")]
+    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
+    {
+        var result = await _workoutPlanService.DeleteAsync(id, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
 }

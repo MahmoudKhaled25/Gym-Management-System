@@ -109,7 +109,6 @@ public static class DependencyInjection
             //options.SignIn.RequireConfirmedAccount = true;
             options.User.RequireUniqueEmail = true;
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(20);
-            
         }
        );
 
