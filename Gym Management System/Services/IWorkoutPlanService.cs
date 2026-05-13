@@ -8,5 +8,8 @@ public interface IWorkoutPlanService
 
     Task<Result> AddAsync(WorkoutPlanRequest request,CancellationToken cancellationToken = default!);
 
-  
+    Task<Result<IEnumerable<WorkoutPlanGroupedResponse>>> GetMemberWorkoutPlanAsync(string memberId, CancellationToken cancellationToken = default!);
+
+
+
 }

@@ -10,8 +10,6 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-
-
     public async Task<Result<IEnumerable<WorkoutPlanResponse>>> GetAllAsync(
      string? trainerId,
      CancellationToken cancellationToken)
@@ -30,7 +28,26 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
 
         return Result.Success(workoutPlans.AsEnumerable());
     }
+    public async Task<Result<IEnumerable<WorkoutPlanGroupedResponse>>> GetMemberWorkoutPlanAsync(string memberId, CancellationToken cancellationToken = default)
+    {
+        var result = await _context.WorkoutPlans
+            .Where(x => x.UserId == memberId)
+            .Select(x => new WorkoutPlanResponse(
+                x.Id,
+                x.Name,
+                x.Description,
+                x.Trainer == null ? null : $"{x.Trainer.ApplicationUser!.FirstName} {x.Trainer.ApplicationUser.LastName}",
+                $"{x.User!.FirstName} {x.User.LastName}"
+            ))
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
 
+        var grouped = result
+                .GroupBy(x => x.TrainerName)
+                .Select(g => new WorkoutPlanGroupedResponse(g.Key, g.ToList()));
+
+        return Result.Success(grouped);
+    }
     public async Task<Result> AddAsync(WorkoutPlanRequest request, CancellationToken cancellationToken = default)
     {
         var memberExists = await _context.Users
@@ -52,4 +69,6 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
 
         return Result.Success();
     }
+
+ 
 }

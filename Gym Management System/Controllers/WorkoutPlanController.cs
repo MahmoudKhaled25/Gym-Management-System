@@ -23,6 +23,16 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
         var result = await _workoutPlanService.GetAllAsync(trainerId, cancellationToken);
         return Ok(result.Value);
     }
+
+    [HttpGet("me")]
+    [Authorize(Roles = $"{DefaultRoles.Member.Name}")]
+    public async Task<IActionResult> GetMemberWorkoutPlans(CancellationToken cancellationToken)
+    {
+        var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _workoutPlanService.GetMemberWorkoutPlanAsync(memberId!, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
+
     [HttpPost("")]
     [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
     public async Task<IActionResult> Add([FromBody] WorkoutPlanRequest request, CancellationToken cancellationToken)
@@ -30,4 +40,5 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
         var result = await _workoutPlanService.AddAsync(request, cancellationToken);
        return result.IsSuccess ? CreatedAtAction(nameof(GetAll), new { trainerId = request.TrainerId }, null) : result.ToProblem();
     }
+    
 }
