@@ -10,9 +10,7 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-    public async Task<Result<IEnumerable<WorkoutPlanResponse>>> GetAllAsync(
-     string? trainerId,
-     CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<WorkoutPlanResponse>>> GetAllAsync(string? trainerId,CancellationToken cancellationToken)
     {
         var workoutPlans = await _context.WorkoutPlans
             .Where(x => trainerId == null || x.TrainerId == trainerId)
@@ -50,25 +48,57 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
     }
     public async Task<Result> AddAsync(WorkoutPlanRequest request, CancellationToken cancellationToken = default)
     {
-        var memberExists = await _context.Users
-            .AnyAsync(x => x.Id == request.MemberId, cancellationToken);
-        if (!memberExists)
-            return Result.Failure(UserErrors.UserNotFound);
+        var validationResult = await ValidateMemberAndTrainerAsync(
+                             request.MemberId,
+                             request.TrainerId,
+                             cancellationToken);
 
-        if (request.TrainerId is not null)
-        {
-            var trainerExists = await _context.Trainers
-                .AnyAsync(x => x.UserId == request.TrainerId, cancellationToken);
-            if (!trainerExists)
-                return Result.Failure(TrainerErrors.TrainerNotFound);
-        }
+        if (!validationResult.IsSuccess)
+            return validationResult;
 
         var workoutPlan = request.Adapt<WorkoutPlan>();
         _context.WorkoutPlans.Add(workoutPlan);
         await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+    }
+    public async Task<Result> UpdateAsync(int id, WorkoutPlanRequest request, CancellationToken cancellationToken = default)
+    {
+        var existedWorkoutPlan = await _context.WorkoutPlans
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (existedWorkoutPlan is null)
+            return Result.Failure(WorkoutPlanErrors.WorkoutPlanNotFound);
+
+        var validationResult = await ValidateMemberAndTrainerAsync(
+                             request.MemberId,
+                             request.TrainerId,
+                             cancellationToken);
+
+        if (!validationResult.IsSuccess)
+            return validationResult;
+
+        var updatedWorkoutPlan = request.Adapt(existedWorkoutPlan);
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+
+
+    }
+    private async Task<Result> ValidateMemberAndTrainerAsync(string memberId,string? trainerId,CancellationToken cancellationToken)
+    {
+        var memberExists = await _context.Users
+            .AnyAsync(x => x.Id == memberId, cancellationToken);
+        if (!memberExists)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        if (trainerId is not null)
+        {
+            var trainerExists = await _context.Trainers
+                .AnyAsync(x => x.UserId == trainerId, cancellationToken);
+            if (!trainerExists)
+                return Result.Failure(TrainerErrors.TrainerNotFound);
+        }
 
         return Result.Success();
     }
 
- 
 }

@@ -10,6 +10,6 @@ public interface IWorkoutPlanService
 
     Task<Result<IEnumerable<WorkoutPlanGroupedResponse>>> GetMemberWorkoutPlanAsync(string memberId, CancellationToken cancellationToken = default!);
 
-
+    Task<Result> UpdateAsync(int id, WorkoutPlanRequest request, CancellationToken cancellationToken = default!);
 
 }

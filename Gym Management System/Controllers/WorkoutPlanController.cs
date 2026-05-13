@@ -40,5 +40,11 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
         var result = await _workoutPlanService.AddAsync(request, cancellationToken);
        return result.IsSuccess ? CreatedAtAction(nameof(GetAll), new { trainerId = request.TrainerId }, null) : result.ToProblem();
     }
-    
+    [HttpPut("{id}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] WorkoutPlanRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _workoutPlanService.UpdateAsync(id, request, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
 }
