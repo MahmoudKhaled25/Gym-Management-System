@@ -25,4 +25,19 @@ public class WorkoutPlanExercisesController(IWorkoutPlanExerciseService workoutP
         var result = await _workoutPlanExerciseService.AddExerciseToPlanAsync(workoutPlanId, request, cancellationToken);
         return result.IsSuccess ? CreatedAtAction(nameof(GetExercisesByWorkoutPlanId), new { workoutPlanId }, null) : result.ToProblem();
     }
+    [HttpPut("{workoutPlanExerciseId}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    public async Task<IActionResult> UpdateExerciseInWorkoutPlan([FromRoute] int workoutPlanExerciseId ,[FromBody] UpdateWorkoutPlanExerciseRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _workoutPlanExerciseService.UpdateExerciseInPlanAsync(workoutPlanExerciseId, request, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+    [HttpDelete("{workoutPlanExerciseId}")]
+    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    public async Task<IActionResult> RemoveExerciseFromWorkoutPlan([FromRoute] int workoutPlanExerciseId, CancellationToken cancellationToken)
+    {
+        var result = await _workoutPlanExerciseService.RemoveExerciseFromPlanAsync(workoutPlanExerciseId, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+
 }

@@ -53,4 +53,34 @@ public class WorkoutPlanExerciseService(ApplicationDbContext context) : IWorkout
         await _context.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
+
+    public async Task<Result> UpdateExerciseInPlanAsync(int workoutPlanExerciseId, UpdateWorkoutPlanExerciseRequest request, CancellationToken cancellationToken = default)
+    {
+        var workoutPlanExercise = await _context.WorkoutPlanExercises
+            .FirstOrDefaultAsync(x => x.Id == workoutPlanExerciseId, cancellationToken);
+
+        if (workoutPlanExercise is null)
+            return Result.Failure(WorkoutPlanExerciseErrors.WorkoutPlanExerciseNotFound);
+
+        workoutPlanExercise.Sets = request.Sets;
+        workoutPlanExercise.Reps = request.Reps;
+        workoutPlanExercise.Weight = request.Weight;
+        workoutPlanExercise.RestTime = request.RestTime;
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+    }
+    public async Task<Result> RemoveExerciseFromPlanAsync(int workoutPlanExerciseId, CancellationToken cancellationToken = default)
+    {
+        var workoutPlanExercise = await _context.WorkoutPlanExercises
+            .FirstOrDefaultAsync(x => x.Id == workoutPlanExerciseId, cancellationToken);
+
+        if (workoutPlanExercise is null)
+            return Result.Failure(WorkoutPlanExerciseErrors.WorkoutPlanExerciseNotFound);
+
+        _context.WorkoutPlanExercises.Remove(workoutPlanExercise);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
 }
