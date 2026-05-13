@@ -11,7 +11,7 @@ public sealed class WorkoutPlan
     // Foreign Keys
 
     public Trainer? Trainer { get; set; } 
-    public string TrainerId { get; set; } = string.Empty;
+    public string? TrainerId { get; set; } = string.Empty;
 
     public ApplicationUser? User { get; set; }
     public string UserId { get; set; } = string.Empty;

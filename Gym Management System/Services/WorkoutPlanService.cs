@@ -1,13 +1,16 @@
-﻿using Gym_Management_System.Persistence;
+﻿using Gym_Management_System.Errors;
+using Gym_Management_System.Persistence;
 using GymManagementSystem.Contracts.WorkoutPlan;
+using GymManagementSystem.Errors;
 
 namespace GymManagementSystem.Services;
 
-public class WorkoutPlanService(ApplicationDbContext context,UserManager<ApplicationUser> userManager,RoleManager<ApplicationRole> roleManager) : IWorkoutPlanService
+public class WorkoutPlanService(ApplicationDbContext context,UserManager<ApplicationUser> userManager) : IWorkoutPlanService
 {
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
+
+
 
     public async Task<Result<IEnumerable<WorkoutPlanResponse>>> GetAllAsync(
      string? trainerId,
@@ -26,5 +29,27 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
             .ToListAsync(cancellationToken);
 
         return Result.Success(workoutPlans.AsEnumerable());
+    }
+
+    public async Task<Result> AddAsync(WorkoutPlanRequest request, CancellationToken cancellationToken = default)
+    {
+        var memberExists = await _context.Users
+            .AnyAsync(x => x.Id == request.MemberId, cancellationToken);
+        if (!memberExists)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        if (request.TrainerId is not null)
+        {
+            var trainerExists = await _context.Trainers
+                .AnyAsync(x => x.UserId == request.TrainerId, cancellationToken);
+            if (!trainerExists)
+                return Result.Failure(TrainerErrors.TrainerNotFound);
+        }
+
+        var workoutPlan = request.Adapt<WorkoutPlan>();
+        _context.WorkoutPlans.Add(workoutPlan);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }

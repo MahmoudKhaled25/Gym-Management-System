@@ -1,4 +1,5 @@
-﻿using GymManagementSystem.Services;
+﻿using GymManagementSystem.Contracts.WorkoutPlan;
+using GymManagementSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -21,5 +22,12 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
 
         var result = await _workoutPlanService.GetAllAsync(trainerId, cancellationToken);
         return Ok(result.Value);
+    }
+    [HttpPost("")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    public async Task<IActionResult> Add([FromBody] WorkoutPlanRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _workoutPlanService.AddAsync(request, cancellationToken);
+       return result.IsSuccess ? CreatedAtAction(nameof(GetAll), new { trainerId = request.TrainerId }, null) : result.ToProblem();
     }
 }

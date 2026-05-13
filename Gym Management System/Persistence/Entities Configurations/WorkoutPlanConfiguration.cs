@@ -15,7 +15,8 @@ public class WorkoutPlanConfiguration : IEntityTypeConfiguration<WorkoutPlan>
 
         builder.HasOne(x => x.Trainer)
             .WithMany(x => x.WorkoutPlans)
-            .HasForeignKey(x => x.TrainerId);
+            .HasForeignKey(x => x.TrainerId)
+            .IsRequired(false);
 
         builder.HasOne(x => x.User)
             .WithMany(x => x.WorkoutPlans)
