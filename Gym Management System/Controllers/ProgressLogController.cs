@@ -20,6 +20,15 @@ public class ProgressLogController(IProgressLogService progressLogService) : Con
         return Ok(result.Value);
     }
 
+    [HttpGet("me")]
+    [Authorize(Roles = $"{DefaultRoles.Member.Name}")]
+    public async Task<IActionResult> GetMyProgressLogs(CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _progressLogService.GetMyProgressLogsAsync(userId!, cancellationToken);
+        return Ok(result.Value);
+    }
+
     [HttpPost("")]
     [Authorize(Roles = $"{DefaultRoles.Member.Name}")]
     public async Task<IActionResult> Add([FromBody] ProgressLogRequest request, CancellationToken cancellationToken)

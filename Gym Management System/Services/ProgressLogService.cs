@@ -1,6 +1,8 @@
 ﻿using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
 using GymManagementSystem.Contracts.ProgressLog;
+using GymManagementSystem.Errors;
+using Org.BouncyCastle.Utilities;
 
 namespace GymManagementSystem.Services;
 
@@ -9,9 +11,9 @@ public class ProgressLogService(ApplicationDbContext context,UserManager<Applica
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-    public async Task<Result<IEnumerable<ProgressLogResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IEnumerable<AllProgressLogsResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var progressLogs = await _context.ProgressLogs.Select(x => new ProgressLogResponse(
+        var progressLogs = await _context.ProgressLogs.Select(x => new AllProgressLogsResponse(
             x.Id,
             x.User!.FirstName + " " + x.User.LastName,
             x.Weight,
@@ -22,6 +24,26 @@ public class ProgressLogService(ApplicationDbContext context,UserManager<Applica
 
         return Result.Success(progressLogs.AsEnumerable());
 
+    }
+    public async Task<Result<ProgressLogGroupedResponse>> GetMyProgressLogsAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var progressLogs = await _context.ProgressLogs.Where(x => x.UserId == userId)
+          .Select(x => new AllProgressLogsResponse(
+            x.Id,
+            x.User!.FirstName + " " + x.User.LastName,
+            x.Weight,
+            x.Notes,
+            x.LogDate
+            )).AsNoTracking()
+            .ToListAsync(cancellationToken);
+        if (!progressLogs.Any())
+        {
+            return Result.Failure<ProgressLogGroupedResponse>(ProgressLogErrors.ProgressLogNotFound);
+        }
+
+        var groupedLogs = new ProgressLogGroupedResponse(progressLogs.First().MemberName,
+            progressLogs.Select(x => new ProgressLogResponse(x.Id,x.Weight,x.Notes,x.LogDate)));
+        return Result.Success(groupedLogs);
     }
     public async Task<Result> AddAsync(string userId, ProgressLogRequest request, CancellationToken cancellationToken = default)
     {
@@ -35,5 +57,6 @@ public class ProgressLogService(ApplicationDbContext context,UserManager<Applica
         await _context.SaveChangesAsync(cancellationToken);
         return Result.Success();    
     }
+
 
 }
