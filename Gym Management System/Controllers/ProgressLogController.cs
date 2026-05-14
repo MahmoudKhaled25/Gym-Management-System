@@ -1,6 +1,8 @@
-﻿using GymManagementSystem.Services;
+﻿using GymManagementSystem.Contracts.ProgressLog;
+using GymManagementSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GymManagementSystem.Controllers;
 
@@ -16,5 +18,14 @@ public class ProgressLogController(IProgressLogService progressLogService) : Con
     {
         var result = await _progressLogService.GetAllAsync(cancellationToken);
         return Ok(result.Value);
+    }
+
+    [HttpPost("")]
+    [Authorize(Roles = $"{DefaultRoles.Member.Name}")]
+    public async Task<IActionResult> Add([FromBody] ProgressLogRequest request, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _progressLogService.AddAsync(userId!,request, cancellationToken);
+        return result.IsSuccess ? Created() : result.ToProblem();
     }
 }
