@@ -37,4 +37,20 @@ public class ProgressLogController(IProgressLogService progressLogService) : Con
         var result = await _progressLogService.AddAsync(userId!,request, cancellationToken);
         return result.IsSuccess ? Created() : result.ToProblem();
     }
+    [HttpPut("{progressLogId}")]
+    [Authorize(Roles = $"{DefaultRoles.Member.Name}")]
+    public async Task<IActionResult> Update([FromRoute]int progressLogId, [FromBody] ProgressLogRequest request, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _progressLogService.UpdateAsync(userId!,progressLogId, request, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+    [HttpDelete("{progressLogId}")]
+    [Authorize(Roles = $"{DefaultRoles.Member.Name}")]
+    public async Task<IActionResult> Delete([FromRoute]int progressLogId, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _progressLogService.DeleteAsync(userId!, progressLogId, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
 }

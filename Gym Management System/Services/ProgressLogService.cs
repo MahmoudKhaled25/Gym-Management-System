@@ -58,5 +58,27 @@ public class ProgressLogService(ApplicationDbContext context,UserManager<Applica
         return Result.Success();    
     }
 
+    public async Task<Result> UpdateAsync(string userId,int progressLogId, ProgressLogRequest request, CancellationToken cancellationToken = default)
+    {
+        var progressLog = await _context.ProgressLogs
+            .FirstOrDefaultAsync(x => x.Id == progressLogId && x.UserId == userId, cancellationToken);
 
+        if (progressLog is null)
+            return Result.Failure(ProgressLogErrors.ProgressLogNotFound);
+
+         request.Adapt(progressLog);
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+    }
+
+    public async Task<Result> DeleteAsync(string userId, int progressLogId, CancellationToken cancellationToken = default)
+    {
+        var progressLog = await _context.ProgressLogs
+            .FirstOrDefaultAsync(x => x.Id == progressLogId && x.UserId == userId, cancellationToken);
+        if (progressLog is null)
+            return Result.Failure(ProgressLogErrors.ProgressLogNotFound);
+        _context.ProgressLogs.Remove(progressLog);
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+    }
 }
