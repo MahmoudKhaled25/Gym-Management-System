@@ -9,12 +9,10 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     {
         RuleFor(x => x.FirstName)
             .NotEmpty()
-            .Must(desc => !string.IsNullOrWhiteSpace(desc))
             .Length(3, 100);
 
         RuleFor(x => x.LastName)
             .NotEmpty()
-            .Must(desc => !string.IsNullOrWhiteSpace(desc))
             .Length(3, 100);
 
         RuleFor(x => x.Email)

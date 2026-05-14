@@ -1,11 +1,8 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
+﻿using FluentValidation.AspNetCore;
 using Gym_Management_System.Authentication;
-using Gym_Management_System.Entities;
 using Gym_Management_System.Persistence;
 using Gym_Management_System.Services;
 using GymManagementSystem.Services;
-using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -40,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IExerciseService, ExerciseService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IMembershipPlanService, MembershipPlanService>();
+        services.AddScoped<IProgressLogService, ProgressLogService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ITrainerService, TrainerService>();
         services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
