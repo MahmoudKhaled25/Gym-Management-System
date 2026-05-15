@@ -1,4 +1,6 @@
-﻿namespace Gym_Management_System.Entities;
+﻿using GymManagementSystem.Entities;
+
+namespace Gym_Management_System.Entities;
 
 public class ApplicationUser : IdentityUser
 {
@@ -8,8 +10,10 @@ public class ApplicationUser : IdentityUser
     public DateOnly DateOfBirth { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
-    public DateTime CreatedAt { get; set; } 
+    public DateTime CreatedAt { get; set; }
 
+    public Guid? ProfileImageId { get; set; }
+    public UploadedFile? ProfileImage { get; set; }
     // Navigation Properties
 
     public Trainer? Trainer { get; set; }

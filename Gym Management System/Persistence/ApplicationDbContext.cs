@@ -1,4 +1,5 @@
 ﻿using Gym_Management_System.Entities;
+using GymManagementSystem.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Reflection;
 
@@ -14,6 +15,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Trainer> Trainers { get; set; }
     public DbSet<WorkoutPlan> WorkoutPlans { get; set; }
     public DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
+
+    public DbSet<UploadedFile> UploadedFiles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

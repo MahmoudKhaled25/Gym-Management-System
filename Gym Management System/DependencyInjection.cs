@@ -42,9 +42,6 @@ public static class DependencyInjection
         services.AddScoped<ITrainerService, TrainerService>();
         services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
         services.AddScoped<IWorkoutPlanExerciseService, WorkoutPlanExerciseService>();
- 
-
-
 
         return services;
       }
@@ -105,14 +102,17 @@ public static class DependencyInjection
         {
             options.Password.RequiredLength = 8;
             options.Lockout.MaxFailedAccessAttempts = 5;
-            //options.SignIn.RequireConfirmedAccount = true;
+            //options.SignIn.RequireConfirmedEmail = true;
             options.User.RequireUniqueEmail = true;
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(20);
+            
         }
        );
 
         return services;
     }
+
+
 
 
 }
