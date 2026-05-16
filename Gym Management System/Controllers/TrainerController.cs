@@ -3,12 +3,14 @@ using Gym_Management_System.Contracts.Trainer;
 using Gym_Management_System.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Gym_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = DefaultRoles.Admin.Name)]
+[EnableRateLimiting("General")]
 public class TrainerController(ITrainerService trainerService) : ControllerBase
 {
     private readonly ITrainerService _trainerService = trainerService;

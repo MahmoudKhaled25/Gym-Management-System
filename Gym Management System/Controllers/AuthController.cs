@@ -3,17 +3,20 @@ using Gym_Management_System.Contracts.Auth;
 using Gym_Management_System.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Gym_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("Auth")]
 public class AuthController(IAuthService authService,ILogger<AuthController> logger) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
     private readonly ILogger<AuthController> _logger = logger;
 
     [HttpPost("login")]
+   
     public async Task<IActionResult> Login([FromBody]LoginRequest request,CancellationToken cancellationToken)
     {
         _logger.LogInformation("Logging with email: {email} and password {password}", request.Email, request.Password);
@@ -29,6 +32,7 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
     }
 
     [HttpPost("register")]
+    
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Registering with email: {email} and password {password}", request.Email, request.Password);
@@ -37,6 +41,7 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
         return result.IsSuccess ? Created() : result.ToProblem();
     }
     [HttpPost("forget-password")]
+    
     public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Requesting password reset for email: {email}", request.Email);

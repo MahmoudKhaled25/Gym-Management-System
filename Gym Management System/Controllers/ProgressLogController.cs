@@ -2,12 +2,14 @@
 using GymManagementSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace GymManagementSystem.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("General")]
 public class ProgressLogController(IProgressLogService progressLogService) : ControllerBase
 {
     private readonly IProgressLogService _progressLogService = progressLogService;

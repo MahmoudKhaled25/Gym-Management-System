@@ -5,12 +5,14 @@ using Gym_Management_System.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Gym_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = DefaultRoles.Admin.Name)]
+[EnableRateLimiting("General")]
 public class MemberController(IMemberService memberService) : ControllerBase
 {
     private readonly IMemberService _memberService = memberService;

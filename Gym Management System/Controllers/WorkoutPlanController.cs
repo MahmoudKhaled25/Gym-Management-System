@@ -2,6 +2,7 @@
 using GymManagementSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 using static Gym_Management_System.Abstractions.Consts.DefaultRoles;
 
@@ -9,6 +10,7 @@ namespace GymManagementSystem.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("General")]
 public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : ControllerBase
 {
     private readonly IWorkoutPlanService _workoutPlanService = workoutPlanService;

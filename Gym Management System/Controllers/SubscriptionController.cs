@@ -2,6 +2,7 @@
 using Gym_Management_System.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace Gym_Management_System.Controllers;
@@ -9,6 +10,7 @@ namespace Gym_Management_System.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
+[EnableRateLimiting("General")]
 public class SubscriptionController(ISubscriptionService subscriptionService) : ControllerBase
 {
     private readonly ISubscriptionService _subscriptionService = subscriptionService;

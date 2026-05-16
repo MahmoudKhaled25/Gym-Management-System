@@ -5,10 +5,12 @@ using Gym_Management_System.Services;
 using GymManagementSystem.Services;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 namespace Gym_Management_System;
 
@@ -30,7 +32,8 @@ public static class DependencyInjection
     });
 
         services.AddMapsterConfig()
-            .AddFluentValidationConfig();
+            .AddFluentValidationConfig()
+            .AddRateLimitingConfig();
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
@@ -113,7 +116,43 @@ public static class DependencyInjection
         return services;
     }
 
+    private static IServiceCollection AddRateLimitingConfig(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            // Auth Endpoints
+            options.AddFixedWindowLimiter("Auth", limiterOptions =>
+            {
+                limiterOptions.Window = TimeSpan.FromMinutes(1);
+                limiterOptions.PermitLimit = 5;
+                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                limiterOptions.QueueLimit = 0;
+            });
 
+            // Account & Profile Endpoints
+            options.AddFixedWindowLimiter("Account", limiterOptions =>
+            {
+                limiterOptions.Window = TimeSpan.FromMinutes(1);
+                limiterOptions.PermitLimit = 20;
+                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                limiterOptions.QueueLimit = 0;
+            });
+
+            // General Endpoints
+            options.AddSlidingWindowLimiter("General", limiterOptions =>
+            {
+                limiterOptions.Window = TimeSpan.FromMinutes(1);
+                limiterOptions.PermitLimit = 30;
+                limiterOptions.SegmentsPerWindow = 6;
+                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                limiterOptions.QueueLimit = 0;
+            });
+
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        });
+
+        return services;
+    }
 
 
 }

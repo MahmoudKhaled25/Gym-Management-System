@@ -2,11 +2,13 @@
 using Gym_Management_System.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace GymManagementSystem.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("General")]
 public class ExerciseController(IExerciseService exerciseService) : ControllerBase
 {
     private readonly IExerciseService _exerciseService = exerciseService;
