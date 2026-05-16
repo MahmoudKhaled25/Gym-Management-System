@@ -39,5 +39,8 @@ public record UserErrors
 
     public static readonly Error UpdateFailed =
       new("User.UpdateFailed", "Update Failed", StatusCodes.Status400BadRequest);
+    public static readonly Error NoProfileImage =
+      new("User.NoProfileImage", "No Profile Image for this user", StatusCodes.Status404NotFound);
+
 }
 

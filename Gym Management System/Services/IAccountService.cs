@@ -11,4 +11,7 @@ public interface IAccountService
 
 
     Task<Result> ChangePasswordAsync(string userId, ChangeUserPasswordRequest request, CancellationToken cancellationToken = default!);
+
+    Task<Result<string>> UploadProfileImageAsync(string userId, IFormFile image, CancellationToken cancellationToken = default);
+    Task<Result> DeleteProfileImageAsync(string userId, CancellationToken cancellationToken = default);
 }

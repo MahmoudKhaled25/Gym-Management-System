@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IExerciseService, ExerciseService>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IMembershipPlanService, MembershipPlanService>();
         services.AddScoped<IProgressLogService, ProgressLogService>();

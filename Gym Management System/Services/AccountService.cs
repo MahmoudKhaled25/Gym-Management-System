@@ -2,13 +2,15 @@
 using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using GymManagementSystem.Services;
 
 namespace Gym_Management_System.Services;
 
-public class AccountService(ApplicationDbContext context,UserManager<ApplicationUser> userManager) : IAccountService
+public class AccountService(ApplicationDbContext context,UserManager<ApplicationUser> userManager, IFileStorageService fileStorageService) : IAccountService
 {
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly IFileStorageService _fileStorageService = fileStorageService;
 
     public async Task<Result<UserProfileResponse>> GetProfileAsync(string userId, CancellationToken cancellationToken = default)
     {
@@ -62,5 +64,48 @@ public class AccountService(ApplicationDbContext context,UserManager<Application
         return Result.Success();
 
     }
+ 
+        public async Task<Result<string>> UploadProfileImageAsync(string userId,IFormFile image,CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+                return Result.Failure<string>(UserErrors.UserNotFound);
 
+            if (user.ProfileImageId is not null)
+            {
+                var oldImage = await _context.UploadedFiles
+                    .FirstOrDefaultAsync(x => x.Id == user.ProfileImageId, cancellationToken);
+
+                if (oldImage is not null)
+                    await _fileStorageService.DeleteAsync(oldImage, cancellationToken);
+            }
+
+            var uploadedFile = await _fileStorageService.SaveProfileImageAsync(image, cancellationToken);
+
+            user.ProfileImageId = uploadedFile.Id;
+            await _userManager.UpdateAsync(user);
+
+            return Result.Success(uploadedFile.RelativePath);
+        }
+    
+    public async Task<Result> DeleteProfileImageAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return Result.Failure(UserErrors.UserNotFound);
+
+        if (user.ProfileImageId is null)
+            return Result.Failure(UserErrors.NoProfileImage);
+
+        var image = await _context.UploadedFiles
+            .FirstOrDefaultAsync(x => x.Id == user.ProfileImageId, cancellationToken);
+
+        if (image is not null)
+            await _fileStorageService.DeleteAsync(image, cancellationToken);
+
+        user.ProfileImageId = null;
+        await _userManager.UpdateAsync(user);
+
+        return Result.Success();
+    }
 }

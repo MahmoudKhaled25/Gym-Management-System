@@ -1,6 +1,8 @@
 ﻿using Gym_Management_System.Abstractions;
 using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Services;
+using GymManagementSystem.Contracts.UploadFile;
+using GymManagementSystem.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +36,23 @@ public class AccountController(IAccountService accountService) : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var result = await _accountService.ChangePasswordAsync(userId!, request, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+    [HttpPost("profile-image")]
+    [Authorize]
+    public async Task<IActionResult> UploadProfileImage([FromForm] UploadProfileImageRequest request,CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _accountService.UploadProfileImageAsync(userId!, request.Image, cancellationToken);
+        return result.IsSuccess ? Ok(new { result.Value }) : result.ToProblem();
+    }
+
+    [HttpDelete("profile-image")]
+    [Authorize]
+    public async Task<IActionResult> DeleteProfileImage(CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _accountService.DeleteProfileImageAsync(userId!, cancellationToken);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 }

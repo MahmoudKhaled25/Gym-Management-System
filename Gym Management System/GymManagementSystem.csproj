@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="Persistence\Migrations\" />
+    <Folder Include="wwwroot\uploads\profile-images\" />
   </ItemGroup>
 
 </Project>
