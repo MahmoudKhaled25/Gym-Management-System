@@ -1,4 +1,6 @@
-﻿namespace Gym_Management_System.Contracts.Account;
+﻿using GymManagementSystem.Enums;
+
+namespace Gym_Management_System.Contracts.Account;
 
 public record UserProfileResponse(
     string Id,
@@ -8,6 +10,8 @@ public record UserProfileResponse(
     DateOnly DateOfBirth,
     float Weight,
     float Height,
+    string? ProfileImageUrl,
+    Gender Gender,
     IEnumerable<string> Roles
 );
 

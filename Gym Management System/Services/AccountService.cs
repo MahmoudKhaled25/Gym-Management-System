@@ -2,7 +2,9 @@
 using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using GymManagementSystem.Enums;
 using GymManagementSystem.Services;
+using GymManagementSystem.Settings;
 
 namespace Gym_Management_System.Services;
 
@@ -16,16 +18,27 @@ public class AccountService(ApplicationDbContext context,UserManager<Application
     {
         var user = await _userManager.Users
                     .Include(u => u.Trainer)
+                    .Include(u => u.ProfileImage)
                     .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user == null)
             return Result.Failure<UserProfileResponse>(UserErrors.UserNotFound);
 
         var roles = await _userManager.GetRolesAsync(user);
-        var response = user.Adapt<UserProfileResponse>() with { Roles = roles };
+
+        var profileImageUrl = user.ProfileImageId != null
+            ? user.ProfileImage?.RelativePath
+            : user.Gender == Gender.Male
+                ? FileSettings.MaleDefaultImage
+                : FileSettings.FemaleDefaultImage;
+
+        var response = user.Adapt<UserProfileResponse>() with
+        {
+            Roles = roles,
+            ProfileImageUrl = profileImageUrl
+        };
 
         return Result.Success(response);
-
     }
 
     public async Task<Result> UpdateProfileAsync(string userId, UpdateUserProfileRequest request, CancellationToken cancellationToken = default)

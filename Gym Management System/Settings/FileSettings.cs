@@ -4,8 +4,10 @@ public static class FileSettings
 {
     public const int MaxFileSizeInMB = 1;
 
-    public const int MaxFileSizeInBytes =
-        MaxFileSizeInMB * 1024 * 1024;
+    public const int MaxFileSizeInBytes =MaxFileSizeInMB * 1024 * 1024;
+
+    public const string MaleDefaultImage = "/uploads/defaults/male-avatar.png";
+    public const string FemaleDefaultImage = "/uploads/defaults/female-avatar.png";
 
     public static readonly string[] AllowedExtensions =
     [

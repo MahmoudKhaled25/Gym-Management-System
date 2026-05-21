@@ -1,4 +1,6 @@
 ﻿using GymManagementSystem.Entities;
+using GymManagementSystem.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Gym_Management_System.Entities;
 
@@ -11,6 +13,9 @@ public class ApplicationUser : IdentityUser
     public float Weight { get; set; }
     public float Height { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    [Required]
+    public Gender Gender { get; set; }
 
     public Guid? ProfileImageId { get; set; }
     public UploadedFile? ProfileImage { get; set; }
