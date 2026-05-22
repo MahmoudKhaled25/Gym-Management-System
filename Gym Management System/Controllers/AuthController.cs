@@ -15,8 +15,8 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
     private readonly IAuthService _authService = authService;
     private readonly ILogger<AuthController> _logger = logger;
 
+    [DisableRateLimiting()]
     [HttpPost("login")]
-   
     public async Task<IActionResult> Login([FromBody]LoginRequest request,CancellationToken cancellationToken)
     {
         _logger.LogInformation("Logging with email: {email} and password {password}", request.Email, request.Password);
