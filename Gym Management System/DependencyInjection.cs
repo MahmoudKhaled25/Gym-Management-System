@@ -134,14 +134,18 @@ public static class DependencyInjection
     {
         services.AddRateLimiter(options =>
         {
+
             // Auth Endpoints
-            options.AddFixedWindowLimiter("Auth", limiterOptions =>
-            {
-                limiterOptions.Window = TimeSpan.FromMinutes(1);
-                limiterOptions.PermitLimit = 5;
-                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                limiterOptions.QueueLimit = 0;
-            });
+            options.AddPolicy("AuthByIp", context =>
+            RateLimitPartition.GetFixedWindowLimiter(
+             partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+         factory: _ => new FixedWindowRateLimiterOptions
+         {
+             Window = TimeSpan.FromMinutes(1),
+             PermitLimit = 5,
+             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+             QueueLimit = 0
+         }));
 
             // Account & Profile Endpoints
             options.AddFixedWindowLimiter("Account", limiterOptions =>

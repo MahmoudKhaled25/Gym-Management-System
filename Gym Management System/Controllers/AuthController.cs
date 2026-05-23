@@ -9,7 +9,7 @@ namespace Gym_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[EnableRateLimiting("Auth")]
+[EnableRateLimiting("AuthByIp")]
 public class AuthController(IAuthService authService,ILogger<AuthController> logger) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
