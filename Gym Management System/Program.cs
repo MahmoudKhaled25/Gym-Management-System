@@ -4,14 +4,12 @@ using GymManagementSystem.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
-builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddDependencies(builder.Configuration);
-builder.Services.AddMemoryCache();
+
 
 var app = builder.Build();
 //using var scope = app.Services.CreateScope();
@@ -28,6 +26,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();

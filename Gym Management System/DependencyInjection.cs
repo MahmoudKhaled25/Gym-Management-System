@@ -35,6 +35,18 @@ public static class DependencyInjection
             .AddFluentValidationConfig()
             .AddRateLimitingConfig();
 
+        var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
+            {
+                builder.WithOrigins(allowedOrigins)
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+        });
+
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IExerciseService, ExerciseService>();
@@ -46,6 +58,8 @@ public static class DependencyInjection
         services.AddScoped<ITrainerService, TrainerService>();
         services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
         services.AddScoped<IWorkoutPlanExerciseService, WorkoutPlanExerciseService>();
+
+        services.AddMemoryCache();
 
         return services;
       }
