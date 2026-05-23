@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDependencies(builder.Configuration);
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 //using var scope = app.Services.CreateScope();

@@ -4,16 +4,18 @@ using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Contracts.Trainer;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Gym_Management_System.Services;
 
-public class TrainerService(UserManager<ApplicationUser> userManager,ApplicationDbContext context,RoleManager<ApplicationRole> roleManager) : ITrainerService
+public class TrainerService(UserManager<ApplicationUser> userManager,ApplicationDbContext context,RoleManager<ApplicationRole> roleManager,IMemoryCache memoryCache) : ITrainerService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly ApplicationDbContext _context = context;
     private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
-
-
+    private readonly IMemoryCache _memoryCache = memoryCache;
+    private const string _allTrainersCacheKey = "Trainers_All";
+    private const string _activeTrainersCacheKey = "Trainers_Active";
 
     public async Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainersAsync()
     {
@@ -42,7 +44,7 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
             t.IsActive,
             t.Roles!
         ));
-
+        _memoryCache.Set(_allTrainersCacheKey, response, TimeSpan.FromMinutes(30));
         return Result.Success(response);
     }
 
@@ -71,7 +73,7 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
            t.IsActive,
            t.Roles!
        ));
-
+        _memoryCache.Set(_activeTrainersCacheKey, response, TimeSpan.FromMinutes(30));
         return Result.Success(response);
 
     }
@@ -144,7 +146,8 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
                 trainer.IsActive,
                 new List<string> { DefaultRoles.Trainer.Name }
             );
-
+            _memoryCache.Remove(_allTrainersCacheKey);
+            _memoryCache.Remove(_activeTrainersCacheKey);
             return Result.Success(response);
 
         }
@@ -174,6 +177,8 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
         if (!result.Succeeded)
             return Result.Failure(UserErrors.UpdateFailed);
 
+        _memoryCache.Remove(_allTrainersCacheKey);
+        _memoryCache.Remove(_activeTrainersCacheKey);
         return Result.Success();
     }
 
@@ -188,7 +193,8 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
         trainer.IsActive = !trainer.IsActive;
 
         await _context.SaveChangesAsync(cancellationToken);
-
+        _memoryCache.Remove(_allTrainersCacheKey);
+        _memoryCache.Remove(_activeTrainersCacheKey);
         return Result.Success();
     }
 }

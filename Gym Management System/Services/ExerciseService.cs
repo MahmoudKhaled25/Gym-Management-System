@@ -1,18 +1,24 @@
 ﻿using Gym_Management_System.Contracts.Exercise;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Gym_Management_System.Services;
 
-public class ExerciseService(ApplicationDbContext context) : IExerciseService
+public class ExerciseService(ApplicationDbContext context, IMemoryCache memoryCache) : IExerciseService
 {
     private readonly ApplicationDbContext _context = context;
+    private readonly IMemoryCache _memoryCache = memoryCache;
+    private const string _exercisesCacheKey = "exercises_cache";
 
     public async Task<Result<IEnumerable<ExerciseResponse>>> GetAllAsync(CancellationToken cancellationToken)
     {
         var results = await _context.Exercises
                     .ProjectToType<ExerciseResponse>()
                      .ToListAsync(cancellationToken);
+        
+        _memoryCache.Set(_exercisesCacheKey, results, TimeSpan.FromMinutes(30));
+
         return Result.Success(results.AsEnumerable());
     }
     public async Task<Result<ExerciseResponse>> GetByIdAsync(int id, CancellationToken cancellationToken)

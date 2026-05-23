@@ -2,27 +2,44 @@
 using Gym_Management_System.Contracts.MembershipPlan;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using Microsoft.Extensions.Caching.Memory;
 using System.Numerics;
 
 namespace Gym_Management_System.Services;
 
-public class MembershipPlanService(UserManager<ApplicationUser> userManager,ApplicationDbContext context) : IMembershipPlanService
+public class MembershipPlanService(UserManager<ApplicationUser> userManager,ApplicationDbContext context,IMemoryCache memoryCache) : IMembershipPlanService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly ApplicationDbContext _context = context;
-
+    private readonly IMemoryCache _memoryCache = memoryCache;
+    private const string _allPlansCacheKey = "MembershipPlans_All";
+    private const string _activePlansCacheKey = "MembershipPlans_Active";
     public async Task<Result<IEnumerable<MembershipPlanResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
     {
+        if (_memoryCache.TryGetValue(_allPlansCacheKey, out IEnumerable<MembershipPlanResponse>? cached))
+            return Result.Success(cached!);
+
         var plans = await _context.MembershipPlans
+            .ProjectToType<MembershipPlanResponse>()
             .ToListAsync(cancellationToken);
-        var response = plans.Adapt<IEnumerable<MembershipPlanResponse>>();
-        return Result.Success(response);
+
+        _memoryCache.Set(_allPlansCacheKey, plans, TimeSpan.FromMinutes(30));
+
+        return Result.Success(plans.AsEnumerable());
     }
-    public async Task<Result<IEnumerable<MembershipPlanResponse>>> GetAllActiveAsync()
+    public async Task<Result<IEnumerable<MembershipPlanResponse>>> GetAllActiveAsync(CancellationToken cancellationToken = default)
     {
-        var activePlans =await _context.MembershipPlans.Where(x => x.IsActive).ToListAsync();
-        var response = activePlans.Adapt<IEnumerable<MembershipPlanResponse>>();
-        return Result.Success(response);
+        if (_memoryCache.TryGetValue(_activePlansCacheKey, out IEnumerable<MembershipPlanResponse>? cached))
+            return Result.Success(cached!);
+
+        var plans = await _context.MembershipPlans
+            .Where(x => x.IsActive)
+            .ProjectToType<MembershipPlanResponse>()
+            .ToListAsync(cancellationToken);
+
+        _memoryCache.Set(_activePlansCacheKey, plans, TimeSpan.FromMinutes(30));
+
+        return Result.Success(plans.AsEnumerable());
 
     }
     public async Task<Result<MembershipPlanResponse>> GetByIdAsync(int id, CancellationToken cancellationToken)
@@ -49,7 +66,8 @@ public class MembershipPlanService(UserManager<ApplicationUser> userManager,Appl
 
         await _context.MembershipPlans.AddAsync(plan, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-
+        _memoryCache.Remove(_allPlansCacheKey);
+        _memoryCache.Remove(_activePlansCacheKey);
         var response = plan.Adapt<MembershipPlanResponse>();
 
         return Result.Success(response);
@@ -76,7 +94,8 @@ public class MembershipPlanService(UserManager<ApplicationUser> userManager,Appl
         plan.DurationInDays = request.DurationInDays;
 
         await _context.SaveChangesAsync(cancellationToken);
-
+        _memoryCache.Remove(_allPlansCacheKey);
+        _memoryCache.Remove(_activePlansCacheKey);
         return Result.Success();
     }
     public async Task<Result> ToggleStatusAsync(int id, CancellationToken cancellationToken)
@@ -89,6 +108,8 @@ public class MembershipPlanService(UserManager<ApplicationUser> userManager,Appl
 
         plan.IsActive = !plan.IsActive;
         await _context.SaveChangesAsync(cancellationToken);
+        _memoryCache.Remove(_allPlansCacheKey);
+        _memoryCache.Remove(_activePlansCacheKey);
         return Result.Success();
     }
 

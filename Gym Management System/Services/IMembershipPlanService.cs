@@ -7,8 +7,7 @@ public interface IMembershipPlanService
 {
     Task<Result<IEnumerable<MembershipPlanResponse>>> GetAllAsync(CancellationToken cancellationToken);
 
-    Task<Result<IEnumerable<MembershipPlanResponse>>> GetAllActiveAsync();
-
+    Task<Result<IEnumerable<MembershipPlanResponse>>> GetAllActiveAsync(CancellationToken cancellationToken = default);
     Task<Result<MembershipPlanResponse>> GetByIdAsync(int id,CancellationToken cancellationToken);
 
     Task<Result<MembershipPlanResponse>> AddAsync(MembershipPlanRequest request, CancellationToken cancellationToken);
