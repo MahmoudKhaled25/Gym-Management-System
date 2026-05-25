@@ -1,7 +1,10 @@
 ﻿using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using GymManagementSystem.Abstractions;
+using GymManagementSystem.Contracts.Common;
 using GymManagementSystem.Contracts.WorkoutPlan;
 using GymManagementSystem.Errors;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace GymManagementSystem.Services;
 
@@ -10,21 +13,73 @@ public class WorkoutPlanService(ApplicationDbContext context,UserManager<Applica
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-    public async Task<Result<IEnumerable<WorkoutPlanResponse>>> GetAllAsync(string? trainerId,CancellationToken cancellationToken)
+    public async Task<Result<PaginatedList<WorkoutPlanResponse>>> GetAllAsync(
+     RequestFilters filters,
+     string? trainerId,
+     CancellationToken cancellationToken)
     {
-        var workoutPlans = await _context.WorkoutPlans
-            .Where(x => trainerId == null || x.TrainerId == trainerId)
-            .Select(x => new WorkoutPlanResponse(
-                x.Id,
-                x.Name,
-                x.Description,
-                x.Trainer == null ? null : $"{x.Trainer.ApplicationUser!.FirstName} {x.Trainer.ApplicationUser.LastName}",
-                $"{x.User!.FirstName} {x.User.LastName}"
-            ))
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        var query = _context.WorkoutPlans
+            .Where(x =>
+                (trainerId == null || x.TrainerId == trainerId) &&
+                (string.IsNullOrEmpty(filters.SearchValue) ||
+                 x.Name.Contains(filters.SearchValue) ||
+                 x.Description.Contains(filters.SearchValue) ||
 
-        return Result.Success(workoutPlans.AsEnumerable());
+                 (x.Trainer != null &&
+                  x.Trainer.ApplicationUser != null &&
+                  x.Trainer.ApplicationUser.FirstName.Contains(filters.SearchValue)) ||
+
+                 (x.Trainer != null &&
+                  x.Trainer.ApplicationUser != null &&
+                  x.Trainer.ApplicationUser.LastName.Contains(filters.SearchValue)) ||
+
+                 (x.User != null &&
+                  x.User.FirstName.Contains(filters.SearchValue)) ||
+
+                 (x.User != null &&
+                  x.User.LastName.Contains(filters.SearchValue))
+                ));
+
+        query = filters.SortColumn?.ToLower() switch
+        {
+            "membername" => filters.SortDirection?.ToLower() == "desc"
+                ? query.OrderByDescending(x => x.User!.FirstName)
+                       .ThenByDescending(x => x.User!.LastName)
+                : query.OrderBy(x => x.User!.FirstName)
+                       .ThenBy(x => x.User!.LastName),
+
+            "trainername" => filters.SortDirection?.ToLower() == "desc"
+                ? query.OrderByDescending(x => x.Trainer!.ApplicationUser!.FirstName)
+                       .ThenByDescending(x => x.Trainer!.ApplicationUser!.LastName)
+                : query.OrderBy(x => x.Trainer!.ApplicationUser!.FirstName)
+                       .ThenBy(x => x.Trainer!.ApplicationUser!.LastName),
+
+            "name" => filters.SortDirection?.ToLower() == "desc"
+                ? query.OrderByDescending(x => x.Name)
+                : query.OrderBy(x => x.Name),
+
+            _ => query.OrderBy(x => x.Id)
+        };
+
+        var projectedQuery = query.Select(x => new WorkoutPlanResponse(
+            x.Id,
+            x.Name,
+            x.Description,
+
+            x.Trainer == null
+                ? null
+                : $"{x.Trainer.ApplicationUser!.FirstName} {x.Trainer.ApplicationUser.LastName}",
+
+            $"{x.User!.FirstName} {x.User.LastName}"
+        ));
+
+        var result = await PaginatedList<WorkoutPlanResponse>.CreateAsync(
+            projectedQuery,
+            filters.PageNumber,
+            filters.PageSize,
+            cancellationToken);
+
+        return Result.Success(result);
     }
     public async Task<Result<IEnumerable<WorkoutPlanGroupedResponse>>> GetMemberWorkoutPlanAsync(string memberId, CancellationToken cancellationToken = default)
     {

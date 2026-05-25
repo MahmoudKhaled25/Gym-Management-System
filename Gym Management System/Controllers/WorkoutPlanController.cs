@@ -1,4 +1,5 @@
-﻿using GymManagementSystem.Contracts.WorkoutPlan;
+﻿using GymManagementSystem.Contracts.Common;
+using GymManagementSystem.Contracts.WorkoutPlan;
 using GymManagementSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,12 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
 
     [HttpGet("")]
     [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
-    public async Task<IActionResult> GetAll([FromQuery] string? trainerId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, [FromQuery] string? trainerId, CancellationToken cancellationToken)
     {
         if (User.IsInRole(DefaultRoles.Trainer.Name))
             trainerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var result = await _workoutPlanService.GetAllAsync(trainerId, cancellationToken);
+        var result = await _workoutPlanService.GetAllAsync(filters, trainerId, cancellationToken);
         return Ok(result.Value);
     }
 

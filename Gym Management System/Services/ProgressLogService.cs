@@ -1,8 +1,9 @@
 ﻿using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using GymManagementSystem.Abstractions;
+using GymManagementSystem.Contracts.Common;
 using GymManagementSystem.Contracts.ProgressLog;
 using GymManagementSystem.Errors;
-using Org.BouncyCastle.Utilities;
 
 namespace GymManagementSystem.Services;
 
@@ -11,19 +12,56 @@ public class ProgressLogService(ApplicationDbContext context,UserManager<Applica
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-    public async Task<Result<IEnumerable<AllProgressLogsResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<PaginatedList<AllProgressLogsResponse>>> GetAllAsync(RequestFilters filters,CancellationToken cancellationToken = default)
     {
-        var progressLogs = await _context.ProgressLogs.Select(x => new AllProgressLogsResponse(
+        var query = _context.ProgressLogs
+            .Where(x =>
+                   string.IsNullOrWhiteSpace(filters.SearchValue) ||
+
+                (x.User != null &&
+                 x.User.FirstName.Contains(filters.SearchValue)) ||
+
+                (x.User != null &&
+                 x.User.LastName.Contains(filters.SearchValue)) ||
+
+                x.Notes.Contains(filters.SearchValue) ||
+
+                x.Weight.ToString().Contains(filters.SearchValue));
+
+        query = filters.SortColumn?.ToLower() switch
+        {
+            "memberfullname" => filters.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.User!.FirstName)
+                       .ThenBy(x => x.User!.LastName)
+                : query.OrderByDescending(x => x.User!.FirstName)
+                       .ThenByDescending(x => x.User!.LastName),
+
+            "weight" => filters.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.Weight)
+                : query.OrderByDescending(x => x.Weight),
+
+            "logdate" => filters.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.LogDate)
+                : query.OrderByDescending(x => x.LogDate),
+
+            _ => query.OrderByDescending(x => x.LogDate)
+        };
+
+        var finalQuery = query.Select(x => new AllProgressLogsResponse(
             x.Id,
-            x.User!.FirstName + " " + x.User.LastName,
+            $"{x.User!.FirstName} {x.User.LastName}",
             x.Weight,
             x.Notes,
             x.LogDate
-            )).AsNoTracking()
-            .ToListAsync(cancellationToken);
+        ));
 
-        return Result.Success(progressLogs.AsEnumerable());
+        var result = await PaginatedList<AllProgressLogsResponse>.CreateAsync(
+            finalQuery,
+            filters.PageNumber,
+            filters.PageSize,
+            cancellationToken);
 
+        return Result.Success(result);
     }
     public async Task<Result<ProgressLogGroupedResponse>> GetMyProgressLogsAsync(string userId, CancellationToken cancellationToken = default)
     {
@@ -41,7 +79,7 @@ public class ProgressLogService(ApplicationDbContext context,UserManager<Applica
             return Result.Failure<ProgressLogGroupedResponse>(ProgressLogErrors.ProgressLogNotFound);
         }
 
-        var groupedLogs = new ProgressLogGroupedResponse(progressLogs.First().MemberName,
+        var groupedLogs = new ProgressLogGroupedResponse(progressLogs.First().MemberFullName,
             progressLogs.Select(x => new ProgressLogResponse(x.Id,x.Weight,x.Notes,x.LogDate)));
         return Result.Success(groupedLogs);
     }

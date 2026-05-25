@@ -1,4 +1,5 @@
-﻿using GymManagementSystem.Contracts.ProgressLog;
+﻿using GymManagementSystem.Contracts.Common;
+using GymManagementSystem.Contracts.ProgressLog;
 using GymManagementSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,9 @@ public class ProgressLogController(IProgressLogService progressLogService) : Con
 
     [HttpGet("")]
     [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
-        var result = await _progressLogService.GetAllAsync(cancellationToken);
+        var result = await _progressLogService.GetAllAsync(filters, cancellationToken);
         return Ok(result.Value);
     }
 
