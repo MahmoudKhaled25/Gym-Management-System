@@ -11,6 +11,7 @@ using GymManagementSystem.Contracts.Member;
 using GymManagementSystem.Entities;
 using GymManagementSystem.Enums;
 using GymManagementSystem.Settings;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Gym_Management_System.Services;
 
@@ -68,37 +69,51 @@ public class MemberService(UserManager<ApplicationUser> userManager,SignInManage
 
         return Result.Success(result);
     }
-    public async Task<Result<IEnumerable<UserProfileResponse>>> GetActiveMembersAsync()
+    public async Task<Result<PaginatedList<MemberSummaryResponse>>> GetActiveMembersAsync(RequestFilters filters, CancellationToken cancellationToken)
     {
-        var membersData = await _context.Users
-            .Include(u => u.ProfileImage)
-            .Where(u => _context.UserRoles
-                .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })
-                .Any(x => x.UserId == u.Id && x.Name == DefaultRoles.Member.Name)
-                && (u.LockoutEnd == null || u.LockoutEnd <= DateTimeOffset.UtcNow))
-            .Select(u => new
-            {
-                u.Id,
-                u.Email,
-                u.FirstName,
-                u.LastName,
-                u.DateOfBirth,
-                u.Weight,
-                u.Height,
-                u.Gender,
-                u.ProfileImage,
-                Roles = _context.UserRoles
-                    .Where(ur => ur.UserId == u.Id)
-                    .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
-                    .ToList()
-            })
-            .ToListAsync();
+        var query = _context.Users
+    .Where(u => _context.UserRoles
+     .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })
+     .Any(x => x.UserId == u.Id && x.Name == DefaultRoles.Member.Name) &&
+             (string.IsNullOrEmpty(filters.SearchValue) ||
+              u.FirstName.Contains(filters.SearchValue) ||
+              u.LastName.Contains(filters.SearchValue) ||
+              u.Email!.Contains(filters.SearchValue)) && (u.LockoutEnd == null || u.LockoutEnd <= DateTimeOffset.UtcNow));
 
-        var response = membersData.Select(m =>
-            MapToResponse(m.Id, m.Email!, m.FirstName, m.LastName,
-                m.DateOfBirth, m.Weight, m.Height, m.Gender, m.ProfileImage, m.Roles!));
+        var sortedQuery = filters.SortColumn?.ToLower() switch
+        {
+            "fullname" => filters.SortDirection == "DESC"
+                ? query.OrderByDescending(u => u.FirstName)
+                : query.OrderBy(u => u.FirstName),
 
-        return Result.Success(response.AsEnumerable());
+            "email" => filters.SortDirection == "DESC"
+                ? query.OrderByDescending(u => u.Email)
+                : query.OrderBy(u => u.Email),
+
+            _ => query.OrderBy(u => u.FirstName)
+        };
+
+        var finalQuery = sortedQuery.Select(u => new MemberSummaryResponse(
+            u.Id,
+            $"{u.FirstName} {u.LastName}",
+            u.Email!,
+            u.PhoneNumber,
+            u.Gender,
+            u.Trainer == null ? null : $"{u.Trainer.ApplicationUser!.FirstName} {u.Trainer.ApplicationUser.LastName}",
+            u.Subscriptions
+                .Where(s => s.Status == SubscriptionStatus.Active)
+                .Select(s => s.MembershipPlan!.Name)
+                .FirstOrDefault(),
+            u.LockoutEnd == null || u.LockoutEnd <= DateTimeOffset.UtcNow
+        ));
+
+        var result = await PaginatedList<MemberSummaryResponse>.CreateAsync(
+            finalQuery,
+            filters.PageNumber,
+            filters.PageSize,
+            cancellationToken);
+
+        return Result.Success(result);
     }
 
     public async Task<Result<UserProfileResponse>> GetMemberAsync(string memberId, CancellationToken cancellationToken = default)

@@ -25,9 +25,9 @@ public class MemberController(IMemberService memberService) : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     [HttpGet("active-members")]
-    public async Task<IActionResult> GetActiveMembers()
+    public async Task<IActionResult> GetActiveMembers([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
-        var result = await _memberService.GetActiveMembersAsync();
+        var result = await _memberService.GetActiveMembersAsync(filters,cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     [HttpGet("{id}")]
