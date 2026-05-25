@@ -1,5 +1,6 @@
 ﻿using Gym_Management_System.Contracts.Subscription;
 using Gym_Management_System.Services;
+using GymManagementSystem.Contracts.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -18,9 +19,9 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
 
     [HttpGet("")]
     [Authorize(Roles = DefaultRoles.Admin.Name)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
-        var response = await _subscriptionService.GetAllAsync(cancellationToken);
+        var response = await _subscriptionService.GetAllAsync(filters, cancellationToken);
         return Ok(response.Value);
     }
 

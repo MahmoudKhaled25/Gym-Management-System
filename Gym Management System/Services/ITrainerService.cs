@@ -1,12 +1,14 @@
 ﻿using Gym_Management_System.Abstractions;
 using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Contracts.Trainer;
+using GymManagementSystem.Abstractions;
+using GymManagementSystem.Contracts.Common;
 
 namespace Gym_Management_System.Services;
 
 public interface ITrainerService
 {
-    Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainersAsync();
+    Task<Result<PaginatedList<GetTrainerResponse>>> GetAllTrainersAsync(RequestFilters requestFilters,CancellationToken cancellationToken = default);
 
     Task<Result<IEnumerable<GetTrainerResponse>>> GetActiveTrainersAsync();
 

@@ -2,6 +2,9 @@
 using Gym_Management_System.Enums;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using GymManagementSystem.Abstractions;
+using GymManagementSystem.Contracts.Common;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Gym_Management_System.Services;
 
@@ -9,10 +12,38 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
 {
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
-    public async Task<Result<IEnumerable<SubscriptionResponse>>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<Result<PaginatedList<SubscriptionResponse>>> GetAllAsync(RequestFilters filters, CancellationToken cancellationToken)
     {
-        var response = await _context.Subscriptions
-    .Select(s => new SubscriptionResponse(
+        var query = _context.Subscriptions
+            .Where(s => string.IsNullOrEmpty(filters.SearchValue) ||
+                s.User!.FirstName.Contains(filters.SearchValue) ||
+                s.User!.LastName.Contains(filters.SearchValue) ||
+                s.Trainer!.ApplicationUser!.FirstName.Contains(filters.SearchValue) ||
+                s.Trainer.ApplicationUser!.LastName.Contains(filters.SearchValue) ||
+                s.MembershipPlan!.Name.Contains(filters.SearchValue));
+
+
+        var sortedQuery = filters.SortColumn?.ToLower() switch
+        {
+            "username" => filters.SortDirection == "DESC"
+                ? query.OrderByDescending(u => u.User!.FirstName)
+                : query.OrderBy(u => u.User!.FirstName),
+
+            "trainername" => filters.SortDirection == "DESC"
+                ? query.OrderByDescending(u => u.Trainer!.ApplicationUser!.FirstName)
+                : query.OrderBy(u => u.Trainer!.ApplicationUser!.FirstName),
+
+            "membershipplanname" => filters.SortDirection?.ToLower() == "desc"
+                        ? query.OrderByDescending(s => s.MembershipPlan!.Name)
+                        : query.OrderBy(s => s.MembershipPlan!.Name),
+
+            "startdate" => filters.SortDirection?.ToLower() == "desc"
+                ? query.OrderByDescending(s => s.StartDate)
+                : query.OrderBy(s => s.StartDate),
+
+            _ => query.OrderBy(u => u.User!.FirstName)
+        };
+        var response = sortedQuery.Select(s => new SubscriptionResponse(
         s.Id,
         s.User!.Id,
         $"{s.User.FirstName} {s.User.LastName}",
@@ -23,12 +54,10 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
         s.StartDate,
         s.EndDate,
         s.Status
-    ))
-    .AsNoTracking()
-    .ToListAsync(cancellationToken);
-        return Result.Success(response.AsEnumerable());
+    ));
+        var result = await PaginatedList<SubscriptionResponse>.CreateAsync(response, filters.PageNumber, filters.PageSize, cancellationToken);
 
-
+        return Result.Success(result);
     }
     public async Task<Result<IEnumerable<SubscriptionResponse>>> GetAllActiveAsync(CancellationToken cancellationToken)
     {

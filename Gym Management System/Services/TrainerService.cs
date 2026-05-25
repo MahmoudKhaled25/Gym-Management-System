@@ -4,6 +4,8 @@ using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Contracts.Trainer;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
+using GymManagementSystem.Abstractions;
+using GymManagementSystem.Contracts.Common;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Gym_Management_System.Services;
@@ -17,35 +19,40 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
     private const string _allTrainersCacheKey = "Trainers_All";
     private const string _activeTrainersCacheKey = "Trainers_Active";
 
-    public async Task<Result<IEnumerable<GetTrainerResponse>>> GetAllTrainersAsync()
+    public async Task<Result<PaginatedList<GetTrainerResponse>>> GetAllTrainersAsync(
+        RequestFilters requestFilters,
+        CancellationToken cancellationToken = default)
     {
-        var trainersData = await _context.Users
-            .Include(u => u.Trainer)
-            .Where(u => u.Trainer != null)
-            .Select(u => new
-            {
-                u.Id,
-                u.FirstName,
-                u.LastName,
-                u.Trainer!.Specialization,
-                u.Trainer.IsActive,
-                Roles = _context.UserRoles
-                    .Where(ur => ur.UserId == u.Id)
-                    .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
-                    .ToList()
-            })
-            .ToListAsync();
+        var query = _context.Users
+            .Where(u => u.Trainer != null &&
+                        (string.IsNullOrEmpty(requestFilters.SearchValue) ||
+                         u.FirstName.Contains(requestFilters.SearchValue) ||
+                         u.LastName.Contains(requestFilters.SearchValue) ||
+                         u.Email!.Contains(requestFilters.SearchValue)));
 
-        var response = trainersData.Select(t => new GetTrainerResponse(
-            t.Id,
-            t.FirstName,
-            t.LastName,
-            t.Specialization,
-            t.IsActive,
-            t.Roles!
+        var sortedQuery = query.ApplySort(requestFilters.SortColumn, requestFilters.SortDirection);
+
+        var finalQuery = sortedQuery.Select(u => new GetTrainerResponse(
+            u.Id,
+            u.FirstName,
+            u.LastName,
+            u.Trainer!.Specialization,
+            u.Trainer.IsActive,
+            _context.UserRoles
+                .Where(ur => ur.UserId == u.Id)
+                .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                .ToList()!
         ));
-        _memoryCache.Set(_allTrainersCacheKey, response, TimeSpan.FromMinutes(30));
-        return Result.Success(response);
+
+        var result = await PaginatedList<GetTrainerResponse>.CreateAsync(
+            finalQuery,
+            requestFilters.PageNumber,
+            requestFilters.PageSize,
+            cancellationToken);
+
+        _memoryCache.Set(_allTrainersCacheKey, result, TimeSpan.FromMinutes(30));
+
+        return Result.Success(result);
     }
 
     public async Task<Result<IEnumerable<GetTrainerResponse>>> GetActiveTrainersAsync()

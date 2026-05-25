@@ -1,5 +1,6 @@
 ﻿using Gym_Management_System.Contracts.Exercise;
 using Gym_Management_System.Services;
+using GymManagementSystem.Contracts.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -15,9 +16,9 @@ public class ExerciseController(IExerciseService exerciseService) : ControllerBa
 
     [HttpGet("")]
     [Authorize]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
-        var result = await _exerciseService.GetAllAsync(cancellationToken);
+        var result = await _exerciseService.GetAllAsync(filters, cancellationToken);
         return Ok(result.Value);
     }
 

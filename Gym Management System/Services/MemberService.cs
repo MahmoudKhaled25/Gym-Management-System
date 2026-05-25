@@ -21,9 +21,7 @@ public class MemberService(UserManager<ApplicationUser> userManager,SignInManage
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<Result<PaginatedList<MemberSummaryResponse>>> GetAllMembersAsync(
-     RequestFilters filters,
-     CancellationToken cancellationToken = default)
+    public async Task<Result<PaginatedList<MemberSummaryResponse>>> GetAllMembersAsync(RequestFilters filters,CancellationToken cancellationToken = default)
     {
         var query = _context.Users
     .Where(u => _context.UserRoles
