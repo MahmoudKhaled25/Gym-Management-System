@@ -2,6 +2,7 @@
 using Gym_Management_System.Abstractions.Consts;
 using Gym_Management_System.Contracts.Member;
 using Gym_Management_System.Services;
+using GymManagementSystem.Contracts.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,9 @@ public class MemberController(IMemberService memberService) : ControllerBase
     private readonly IMemberService _memberService = memberService;
 
     [HttpGet("")]
-   public async Task<IActionResult> GetAllMembers()
+   public async Task<IActionResult> GetAllMembers([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
-        var result = await _memberService.GetAllMembersAsync();
+        var result = await _memberService.GetAllMembersAsync(filters, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     [HttpGet("active-members")]
