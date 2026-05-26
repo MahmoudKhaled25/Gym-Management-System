@@ -3,6 +3,8 @@ using Gym_Management_System.Authentication;
 using Gym_Management_System.Persistence;
 using Gym_Management_System.Services;
 using GymManagementSystem.Services;
+using GymManagementSystem.Settings;
+using Hangfire;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -53,13 +55,21 @@ public static class DependencyInjection
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IMembershipPlanService, MembershipPlanService>();
+        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IProgressLogService, ProgressLogService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ITrainerService, TrainerService>();
         services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
         services.AddScoped<IWorkoutPlanExerciseService, WorkoutPlanExerciseService>();
 
+        services.AddOptions<TwilioSettings>()
+            .BindConfiguration(nameof(TwilioSettings))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         services.AddMemoryCache();
+        //services.AddBackgroundJobsConfig(configuration);
+
 
         return services;
       }
@@ -171,6 +181,19 @@ public static class DependencyInjection
 
         return services;
     }
+    //private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services, IConfiguration configuration)
+    //{
+    //    // Add Hangfire services.
+    //    services.AddHangfire(config => config
+    //        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    //        .UseSimpleAssemblyNameTypeSerializer()
+    //        .UseRecommendedSerializerSettings()
+    //        .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
 
+    //    // Add the processing server as IHostedService
+    //    services.AddHangfireServer();
+
+    //    return services;
+    //}
 
 }
