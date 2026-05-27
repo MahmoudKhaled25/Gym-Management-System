@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IProgressLogService, ProgressLogService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<ISubscriptionJobService, SubscriptionJobService>();
         services.AddScoped<ITrainerService, TrainerService>();
         services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
         services.AddScoped<IWorkoutPlanExerciseService, WorkoutPlanExerciseService>();
@@ -68,7 +69,7 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddMemoryCache();
-        //services.AddBackgroundJobsConfig(configuration);
+        services.AddBackgroundJobsConfig(configuration);
 
 
         return services;
@@ -181,19 +182,19 @@ public static class DependencyInjection
 
         return services;
     }
-    //private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services, IConfiguration configuration)
-    //{
-    //    // Add Hangfire services.
-    //    services.AddHangfire(config => config
-    //        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    //        .UseSimpleAssemblyNameTypeSerializer()
-    //        .UseRecommendedSerializerSettings()
-    //        .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
+    private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Add Hangfire services.
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
 
-    //    // Add the processing server as IHostedService
-    //    services.AddHangfireServer();
+        // Add the processing server as IHostedService
+        services.AddHangfireServer();
 
-    //    return services;
-    //}
+        return services;
+    }
 
 }

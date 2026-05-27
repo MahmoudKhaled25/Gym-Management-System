@@ -6,32 +6,45 @@ using Twilio.Types;
 
 namespace GymManagementSystem.Services;
 
-public class NotificationService(IOptions<TwilioSettings> options) : INotificationService 
+public class NotificationService : INotificationService
 {
-    private readonly TwilioSettings _twilioSettings = options.Value;
+    private readonly TwilioSettings _twilioSettings;
+
+    public NotificationService(IOptions<TwilioSettings> options)
+    {
+        _twilioSettings = options.Value;
+        TwilioClient.Init(_twilioSettings.AccountSid, _twilioSettings.AuthToken);
+    }
 
     public async Task SendWhatsAppAsync(string to, string message)
     {
-        var accountSid = _twilioSettings.AccountSid;
-        var authToken = _twilioSettings.AuthToken;
-        var from = _twilioSettings.WhatsappFromNumber;
-        to = FormatEgyptianPhoneNumber(to);
-        TwilioClient.Init(accountSid, authToken);
-
-        await MessageResource.CreateAsync(
-            from: new PhoneNumber(from),
-            to: new PhoneNumber($"whatsapp:{to}"),
-            body: message
+        try
+        {
+            to = FormatEgyptianPhoneNumber(to);
+            await MessageResource.CreateAsync(
+                from: new PhoneNumber(_twilioSettings.WhatsappFromNumber),
+                to: new PhoneNumber($"whatsapp:{to}"),
+                body: message
             );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to send WhatsApp message: {ex.Message}");
+        }
     }
+
     private string FormatEgyptianPhoneNumber(string phoneNumber)
     {
         phoneNumber = phoneNumber.Trim();
 
+        if (phoneNumber.StartsWith("00"))
+            return "+" + phoneNumber.Substring(2);
+
         if (phoneNumber.StartsWith("0"))
-        {
-            phoneNumber = "+2" + phoneNumber;
-        }
+            return "+2" + phoneNumber;
+
+        if (!phoneNumber.StartsWith("+"))
+            return "+2" + phoneNumber;
 
         return phoneNumber;
     }
