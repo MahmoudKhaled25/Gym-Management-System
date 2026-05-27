@@ -5,6 +5,7 @@ using GymManagementSystem.Services;
 using Hangfire;
 using HangfireBasicAuthenticationFilter;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -12,7 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddDependencies(builder.Configuration);
-
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 //using var scope = app.Services.CreateScope();
@@ -26,6 +28,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

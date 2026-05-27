@@ -19,10 +19,17 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
 
     public async Task<Result<AuthResponse>> GetTokenAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
+        _logger.LogInformation("Login attempt received");
         // check if the email is correct
         if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
+        {
+            _logger.LogWarning("Failed login attempt for {Email}", request.Email);
             return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);
+          
+        }
+        
         // check if the password is correct
+        
         var result = await _signInManager.PasswordSignInAsync(user, request.Password, false,true);
 
 
@@ -41,9 +48,17 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
             await _userManager.UpdateAsync(user);
 
             var response = new AuthResponse(user.Id, user.Email!, user.FirstName, user.LastName, token, expiresIn, roles,refreshToken,refreshTokenExpiration);
+            _logger.LogInformation("User {UserId} logged in successfully", user.Id);
             return Result.Success(response);
         }
+        
         var error = result.IsLockedOut ? UserErrors.LockedUser : UserErrors.InvalidCredentials;
+
+        if(error == UserErrors.LockedUser)
+            _logger.LogWarning("User {Email} is locked out", request.Email);
+        if(error == UserErrors.InvalidCredentials)
+            _logger.LogWarning("Invalid login attempt for {Email}", request.Email);
+
         return Result.Failure<AuthResponse>(error);
     }
 
@@ -96,10 +111,12 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
         if (!result.Succeeded)
         {
             var error = result.Errors.First();
+            _logger.LogWarning("Failed registration attempt for {Email}: {Error}", request.Email, error.Description);
             return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
         }
 
         await _userManager.AddToRoleAsync(user, DefaultRoles.Member.Name);
+        _logger.LogInformation("User {UserId} registered successfully", user.Id);
 
         return Result.Success();
     }

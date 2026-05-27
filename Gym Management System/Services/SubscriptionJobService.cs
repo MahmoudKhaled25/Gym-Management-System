@@ -3,10 +3,11 @@ using Gym_Management_System.Persistence;
 
 namespace GymManagementSystem.Services;
 
-public class SubscriptionJobService(ApplicationDbContext context,INotificationService notificationService) : ISubscriptionJobService
+public class SubscriptionJobService(ApplicationDbContext context,INotificationService notificationService,ILogger<SubscriptionJobService> logger) : ISubscriptionJobService
 {
     private readonly ApplicationDbContext _context = context;
     private readonly INotificationService _notificationService = notificationService;
+    private readonly ILogger<SubscriptionJobService> _logger = logger;
 
     public async Task ExpireSubscriptionsAsync()
     {
@@ -17,6 +18,8 @@ public class SubscriptionJobService(ApplicationDbContext context,INotificationSe
 
         foreach(var expiredSubscription in expiredSubscriptions) 
             expiredSubscription.Status = SubscriptionStatus.Expired;
+
+        _logger.LogInformation("Expired {Count} subscriptions", expiredSubscriptions.Count);
 
         await _context.SaveChangesAsync();
     }
@@ -39,6 +42,8 @@ public class SubscriptionJobService(ApplicationDbContext context,INotificationSe
 
             await _notificationService.SendWhatsAppAsync(subscription.User.PhoneNumber!,message);
         }
+        _logger.LogInformation("Sent {Count} expiry notifications", expiringSubscriptions.Count);
+
     }
 }
 

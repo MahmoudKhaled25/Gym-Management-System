@@ -19,7 +19,6 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody]LoginRequest request,CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Logging with email: {email} and password {password}", request.Email, request.Password);
         var result = await _authService.GetTokenAsync(request, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
@@ -35,7 +34,7 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
     
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Registering with email: {email} and password {password}", request.Email, request.Password);
+       
         // to do : Confirmation password 
         var result = await _authService.RegisterAsync(request, cancellationToken);
         return result.IsSuccess ? Created() : result.ToProblem();
