@@ -1,5 +1,6 @@
 ﻿using Gym_Management_System.Abstractions;
 using Gym_Management_System.Contracts.Auth;
+using GymManagementSystem.Contracts.Auth;
 
 namespace Gym_Management_System.Services;
 
@@ -14,4 +15,6 @@ public interface IAuthService
     Task<Result> SendResetPasswordCodeAsync(ForgetPasswordRequest request,CancellationToken cancellationToken = default!);
 
     Task<Result> ResetPasswordAsync (ResetPasswordRequest request, CancellationToken cancellationToken = default!);
+
+    Task<Result> ConfirmEmailAsync(ConfirmEmailRequest request, CancellationToken cancellationToken = default!);
 }

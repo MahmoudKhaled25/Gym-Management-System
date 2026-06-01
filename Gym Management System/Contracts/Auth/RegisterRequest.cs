@@ -8,5 +8,6 @@ public record RegisterRequest
     string LastName,
     string Email,
     string Password,
-    Gender Gender
+    Gender Gender,
+    string PhoneNumber
 );

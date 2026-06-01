@@ -82,7 +82,7 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
     public async Task<Result<SubscriptionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         var response = await _context.Subscriptions
-    .Where(s => s.Id == id)  // ← قبل الـ Select
+    .Where(s => s.Id == id)  
     .Select(s => new SubscriptionResponse(
         s.Id,
         s.User!.Id,
@@ -158,7 +158,6 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
 
         return Result.Success();
     }
-
     public async Task<Result> CancelAsync(int id, CancellationToken cancellationToken)
     {
         var subscription = await _context.Subscriptions.FirstOrDefaultAsync(s => s.Id == id);

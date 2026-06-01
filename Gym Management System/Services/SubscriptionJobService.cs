@@ -23,7 +23,6 @@ public class SubscriptionJobService(ApplicationDbContext context,INotificationSe
 
         await _context.SaveChangesAsync();
     }
-
     public async Task NotifyExpiringSubscriptionsAsync()
     {
         var threeDaysLater = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(3));

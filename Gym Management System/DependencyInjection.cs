@@ -51,6 +51,7 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IExerciseService, ExerciseService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IMemberService, MemberService>();
@@ -67,6 +68,11 @@ public static class DependencyInjection
             .BindConfiguration(nameof(TwilioSettings))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.AddOptions<EmailSettings>()
+           .BindConfiguration(nameof(EmailSettings))
+           .ValidateDataAnnotations()
+           .ValidateOnStart();
 
         services.AddMemoryCache();
         services.AddBackgroundJobsConfig(configuration);
@@ -131,7 +137,7 @@ public static class DependencyInjection
         {
             options.Password.RequiredLength = 8;
             options.Lockout.MaxFailedAccessAttempts = 5;
-            //options.SignIn.RequireConfirmedEmail = true;
+            options.SignIn.RequireConfirmedEmail = true;
             options.User.RequireUniqueEmail = true;
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(20);
             

@@ -1,6 +1,7 @@
 ﻿using Gym_Management_System.Abstractions;
 using Gym_Management_System.Contracts.Auth;
 using Gym_Management_System.Services;
+using GymManagementSystem.Contracts.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -34,7 +35,6 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
     
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
-       
         // to do : Confirmation password 
         var result = await _authService.RegisterAsync(request, cancellationToken);
         return result.IsSuccess ? Created() : result.ToProblem();
@@ -54,4 +54,12 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
         var result = await _authService.ResetPasswordAsync(request, cancellationToken);
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Confirming email for email: {email}", request.Email);
+        var result = await _authService.ConfirmEmailAsync(request, cancellationToken);
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
+
 }

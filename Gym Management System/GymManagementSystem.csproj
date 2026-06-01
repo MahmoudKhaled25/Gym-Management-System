@@ -15,7 +15,7 @@
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
     <PackageReference Include="Hangfire.Dashboard.Basic.Authentication" Version="8.0.0" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.23" />
-    <PackageReference Include="MailKit" Version="4.16.0" />
+    <PackageReference Include="MailKit" Version="4.17.0" />
     <PackageReference Include="Mapster" Version="10.0.7" />
     <PackageReference Include="Mapster.DependencyInjection" Version="10.0.7" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
@@ -38,6 +38,10 @@
   <ItemGroup>
     <Folder Include="Persistence\Migrations\" />
     <Folder Include="wwwroot\uploads\profile-images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Templates\EmailTemplates.cs" />
   </ItemGroup>
 
 </Project>
