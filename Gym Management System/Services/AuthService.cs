@@ -13,7 +13,11 @@ using System.Text;
 
 namespace Gym_Management_System.Services;
 
-public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider jwtProvider,SignInManager<ApplicationUser> signInManager,ILogger<AuthService> logger,IEmailService emailService) : IAuthService
+public class AuthService(UserManager<ApplicationUser> userManager,
+    IJwtProvider jwtProvider,
+    SignInManager<ApplicationUser> signInManager,
+    ILogger<AuthService> logger,
+    IEmailService emailService) : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
@@ -199,7 +203,26 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
 
     }
 
+    public async Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request)
+    {
+        if(await _userManager.FindByEmailAsync(request.Email) is not { } user)
+            return Result.Failure(UserErrors.UserNotFound);
 
+        if (user.EmailConfirmed)
+        {
+            return Result.Failure(UserErrors.DuplicatedConfirmation);
+        }
+
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+        _logger.LogInformation("Confirmation Code : {code}", encodedToken);
+        var confirmationLink =
+                         $"https://localhost:7088/api/auth/confirm-email" +
+                         $"?email={Uri.EscapeDataString(user.Email!)}" +
+                         $"&token={encodedToken}";
+        await SendConfirmationEmail(user, confirmationLink);
+        return Result.Success();
+    }
     private static string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -214,5 +237,5 @@ public class AuthService(UserManager<ApplicationUser> userManager,IJwtProvider j
             body);  
     }
 
-    
+   
 }

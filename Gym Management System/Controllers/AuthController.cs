@@ -61,5 +61,12 @@ public class AuthController(IAuthService authService,ILogger<AuthController> log
         var result = await _authService.ConfirmEmailAsync(request, cancellationToken);
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
+    [HttpPost("resend-confirmation-email")]
+    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request)
+    {
+        _logger.LogInformation("Resending confirmation email for email: {email}", request.Email);
+        var result = await _authService.ResendConfirmationEmailAsync(request);
+        return result.IsSuccess ? Ok() : result.ToProblem();
+    }
 
 }
