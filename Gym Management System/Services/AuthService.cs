@@ -69,8 +69,6 @@ public class AuthService(UserManager<ApplicationUser> userManager,
 
         return Result.Failure<AuthResponse>(error);
     }
-
-
     public async Task<Result<AuthResponse>> GetRefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default)
     {
         var userId = _jwtProvider.ValidateToken(request.Token);
@@ -110,7 +108,6 @@ public class AuthService(UserManager<ApplicationUser> userManager,
         return Result.Success(response);
 
     }
-
     public async Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
         var user = request.Adapt<ApplicationUser>();
@@ -135,7 +132,6 @@ public class AuthService(UserManager<ApplicationUser> userManager,
         var error = result.Errors.First();
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
     }
-
     public async Task<Result> SendResetPasswordCodeAsync(ForgetPasswordRequest request, CancellationToken cancellationToken = default)
     {
         if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
@@ -144,36 +140,30 @@ public class AuthService(UserManager<ApplicationUser> userManager,
         if (!user.EmailConfirmed)
             return Result.Failure(UserErrors.EmailNotConfirmed with { StatusCode = StatusCodes.Status400BadRequest });
 
-        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        _logger.LogInformation("Password reset code generated for user {Email}: {Code}", user.Email, code);
-
+        var otpCode = await _userManager.GenerateUserTokenAsync(user, "Email", "ResetPasswordPurpose");
+        _logger.LogInformation("Password reset OTP generated for user {Email}: {OtpCode}", user.Email, otpCode);
+        //var resetLink =
+        //                 $"https://localhost:7088/api/auth/reset-password" +
+        //                 $"?email={Uri.EscapeDataString(user.Email!)}" +
+        //                 $"&token={otpCode}";
+        await SendResetPasswordEmail(user, otpCode);
         return Result.Success();
     }
-
     public async Task<Result> ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default)
     {
         if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
             return Result.Failure(UserErrors.InvalidCredentials);
 
-        IdentityResult identityResult;
+        var isValid = await _userManager.VerifyUserTokenAsync(user,"Email","ResetPasswordPurpose", request.Code);
+        if (!isValid)
+            return Result.Failure(UserErrors.InvalidCode);
 
-        try
-        {
-            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Code));
-            identityResult = await _userManager.ResetPasswordAsync(user, code, request.NewPassword);
-
-        }
-        catch
-        {
-            identityResult = IdentityResult.Failed(_userManager.ErrorDescriber.InvalidToken());
-        }
-        if (identityResult.Succeeded)
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
+        if (result.Succeeded)
             return Result.Success();
-            
-        var error = identityResult.Errors.First();
-        return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status401Unauthorized));
 
+        return Result.Failure(UserErrors.PasswordResetFailed);
     }
     public async Task<Result> ConfirmEmailAsync(ConfirmEmailRequest request, CancellationToken cancellationToken = default)
     {
@@ -202,7 +192,6 @@ public class AuthService(UserManager<ApplicationUser> userManager,
         return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
 
     }
-
     public async Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request)
     {
         if(await _userManager.FindByEmailAsync(request.Email) is not { } user)
@@ -236,6 +225,14 @@ public class AuthService(UserManager<ApplicationUser> userManager,
             "Confirm your email - Gym Management",
             body);  
     }
+    private async Task SendResetPasswordEmail(ApplicationUser user, string otpCode)
+    {
+        var body = EmailTemplates.GetOtpEmailBody(user.FirstName, otpCode);
+        await _emailService.SendEmailAsync(
+            user.Email!,
+            "Reset your password - Gym Management",
+            body);
+    }
 
-   
+
 }

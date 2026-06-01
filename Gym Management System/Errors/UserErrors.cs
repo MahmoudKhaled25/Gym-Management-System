@@ -42,5 +42,8 @@ public record UserErrors
     public static readonly Error NoProfileImage =
       new("User.NoProfileImage", "No Profile Image for this user", StatusCodes.Status404NotFound);
 
+    public static readonly Error PasswordResetFailed = 
+      new("User.PasswordResetFailed", "Password Reset Failed", StatusCodes.Status400BadRequest);
+
 }
 
