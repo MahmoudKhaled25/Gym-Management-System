@@ -12,6 +12,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<MembershipPlan> MembershipPlans { get; set; }
     public DbSet<ProgressLog> ProgressLogs { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
+
+    public DbSet<SubscriptionRequest> SubscriptionRequests { get; set; }
     public DbSet<Trainer> Trainers { get; set; }
     public DbSet<WorkoutPlan> WorkoutPlans { get; set; }
     public DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }

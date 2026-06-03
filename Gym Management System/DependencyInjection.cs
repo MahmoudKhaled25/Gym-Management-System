@@ -60,6 +60,7 @@ public static class DependencyInjection
         services.AddScoped<IProgressLogService, ProgressLogService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ISubscriptionJobService, SubscriptionJobService>();
+        services.AddScoped<ISubscriptionRequestService, SubscriptionRequestService>();
         services.AddScoped<ITrainerService, TrainerService>();
         services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
         services.AddScoped<IWorkoutPlanExerciseService, WorkoutPlanExerciseService>();
