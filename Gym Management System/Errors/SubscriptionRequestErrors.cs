@@ -21,4 +21,9 @@ public static class SubscriptionRequestErrors
         new("SubscriptionRequest.AlreadyProcessed",
             "Subscription request has already been processed",
             StatusCodes.Status400BadRequest);
+
+    public static readonly Error NoRequestsFound = 
+        new("SubscriptionRequest.NoRequestsFound",
+            "No subscription requests found for the user",
+            StatusCodes.Status404NotFound);
 }
