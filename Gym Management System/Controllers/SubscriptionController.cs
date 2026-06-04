@@ -48,11 +48,10 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     [HttpPost("")]
-    [Authorize(Roles = DefaultRoles.Member.Name)]
-    public async Task<IActionResult> Add(SubscriptionRequest request,CancellationToken cancellationToken)
+    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    public async Task<IActionResult> Add([FromBody] SubscriptionSendRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var result = await _subscriptionService.AddAsync(userId!,request , cancellationToken);
+        var result = await _subscriptionService.AddAsync(request, cancellationToken);
         return result.IsSuccess ? Created() : result.ToProblem();
     }
     [HttpPut("{id}")]

@@ -9,6 +9,6 @@ public interface ISubscriptionService
     Task<Result<IEnumerable<SubscriptionResponse>>> GetAllActiveAsync(CancellationToken cancellationToken);
     Task<Result<SubscriptionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken);
     Task<Result<UserSubscriptionResponse>> GetMySubscriptionAsync(string userId, CancellationToken cancellationToken);
-    Task<Result> AddAsync(string userId, SubscriptionRequest request, CancellationToken cancellationToken);
+    Task<Result> AddAsync(SubscriptionSendRequest request, CancellationToken cancellationToken);
     Task<Result> CancelAsync(int id, CancellationToken cancellationToken);
 }

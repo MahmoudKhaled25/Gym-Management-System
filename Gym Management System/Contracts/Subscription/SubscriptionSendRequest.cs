@@ -2,5 +2,5 @@
 
 namespace Gym_Management_System.Contracts.Subscription;
 
-public record SubscriptionRequest(int MembershipPlanId);
+public record SubscriptionSendRequest(string UserId, int MembershipPlanId);
 

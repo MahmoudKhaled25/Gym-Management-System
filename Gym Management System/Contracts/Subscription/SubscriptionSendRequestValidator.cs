@@ -1,8 +1,8 @@
 ﻿namespace Gym_Management_System.Contracts.Subscription;
 
-public class SubscriptionRequestValidator : AbstractValidator<SubscriptionRequest>
+public class SubscriptionSendRequestValidator : AbstractValidator<SubscriptionSendRequest>
 {
-    public SubscriptionRequestValidator()
+    public SubscriptionSendRequestValidator()
     {
         RuleFor(x => x.MembershipPlanId)
             .NotEmpty()

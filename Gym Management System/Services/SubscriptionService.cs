@@ -121,14 +121,14 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
 
         return Result.Success(response);
     }
-    public async Task<Result> AddAsync(string userId, SubscriptionRequest request, CancellationToken cancellationToken)
+    public async Task<Result> AddAsync(SubscriptionSendRequest request, CancellationToken cancellationToken)
     {
         var plan = await _context.MembershipPlans.SingleOrDefaultAsync(x => x.Id == request.MembershipPlanId && x.IsActive,cancellationToken);
         if (plan == null)
             return Result.Failure(MembershipPlanErrors.PlanNotFound);
 
         var isMemberHasActiveSubscription = await _context.Subscriptions
-            .AnyAsync(x => x.UserId == userId && x.Status == SubscriptionStatus.Active,cancellationToken);
+            .AnyAsync(x => x.UserId == request.UserId && x.Status == SubscriptionStatus.Active,cancellationToken);
         if (isMemberHasActiveSubscription)
             return Result.Failure(SubscriptionErrors.SubscriptionExists);
 
@@ -145,7 +145,7 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
 
         var subscription = new Subscription
         {
-            UserId = userId,
+            UserId = request.UserId,
             MembershipPlanId = plan.Id,
             TrainerId = trainer?.UserId,
             StartDate = startDate,
