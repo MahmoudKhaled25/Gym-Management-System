@@ -4,6 +4,7 @@ using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
 using GymManagementSystem.Abstractions;
 using GymManagementSystem.Contracts.Common;
+using GymManagementSystem.Errors;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Gym_Management_System.Services;
@@ -170,5 +171,26 @@ public class SubscriptionService(ApplicationDbContext context,UserManager<Applic
 
     }
 
-   
-}
+    public async Task<Result> ChangeTrainerAsync(int subscriptionId, string trainerId, CancellationToken cancellationToken = default)
+    {
+        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken);
+        if (subscription is null || subscription.Status != SubscriptionStatus.Active)
+            return Result.Failure(SubscriptionErrors.SubscriptionNotFound);
+
+        var plan = await _context.MembershipPlans
+        .FirstOrDefaultAsync(p => p.Id == subscription.MembershipPlanId, cancellationToken);
+
+        if (plan is null || plan.SessionsPerMonth == 0)
+            return Result.Failure(SubscriptionErrors.PlanHasNoTrainer);
+
+        var trainer = await _context.Trainers.FirstOrDefaultAsync(t => t.UserId == trainerId && t.IsActive, cancellationToken);
+        if (trainer is null)
+            return Result.Failure(TrainerErrors.TrainerNotFound);
+
+        subscription.TrainerId = trainerId;
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+    }
+
+ }
+

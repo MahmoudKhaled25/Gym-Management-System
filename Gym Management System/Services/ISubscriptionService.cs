@@ -11,4 +11,6 @@ public interface ISubscriptionService
     Task<Result<UserSubscriptionResponse>> GetMySubscriptionAsync(string userId, CancellationToken cancellationToken);
     Task<Result> AddAsync(SubscriptionSendRequest request, CancellationToken cancellationToken);
     Task<Result> CancelAsync(int id, CancellationToken cancellationToken);
+
+    Task<Result> ChangeTrainerAsync(int subscriptionId, string trainerId, CancellationToken cancellationToken = default);
 }

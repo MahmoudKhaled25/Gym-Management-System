@@ -1,6 +1,7 @@
 ﻿using Gym_Management_System.Contracts.Subscription;
 using Gym_Management_System.Services;
 using GymManagementSystem.Contracts.Common;
+using GymManagementSystem.Contracts.Subscription;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -59,6 +60,13 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
     public async Task<IActionResult> Cancel([FromRoute]int id, CancellationToken cancellationToken)
     {
         var result = await _subscriptionService.CancelAsync(id, cancellationToken);
+        return result.IsSuccess ? NoContent() : result.ToProblem();
+    }
+    [HttpPut("{subscriptionId}/change-trainer")]
+    [Authorize(Roles = DefaultRoles.Member.Name)]
+    public async Task<IActionResult> ChangeTrainer([FromRoute] int subscriptionId, [FromBody] ChangeTrainerRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _subscriptionService.ChangeTrainerAsync(subscriptionId, request.TrainerId, cancellationToken);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
 }
