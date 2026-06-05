@@ -25,6 +25,9 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.Property(x => x.CreatedAt)
             .HasDefaultValueSql("GETUTCDATE()");
 
+        builder.Property(x => x.LockoutEnabled)
+            .HasDefaultValue(true);
+
         builder.HasData(new ApplicationUser
         {
             Id = DefaultUsers.AdminId,

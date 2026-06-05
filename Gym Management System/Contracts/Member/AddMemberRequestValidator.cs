@@ -33,5 +33,10 @@ public class AddMemberRequestValidator : AbstractValidator<AddMemberRequest>
             .GreaterThan(0).WithMessage("Weight must be greater than 0.");
         RuleFor(x => x.Height)
             .GreaterThan(0).WithMessage("Height must be greater than 0.");
+
+        RuleFor(x => x.PhoneNumber)
+            .Matches(RegexPatterns.PhoneNumber)
+            .WithMessage("Invalid Egyptian phone number.")
+            .When(x => x.PhoneNumber is not null);
     }
 }

@@ -19,6 +19,13 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
             .NotEmpty()
             .EmailAddress();
 
+        RuleFor(x => x.PhoneNumber)
+           .Matches(RegexPatterns.PhoneNumber)
+           .WithMessage("Invalid Egyptian phone number.");
+
+        RuleFor(x => x.Gender)
+            .IsInEnum();
+
         RuleFor(x => x.Password)
             .NotEmpty()
             .Matches(RegexPatterns.Password);

@@ -49,8 +49,9 @@ public static class DependencyInjection
             });
         });
 
-        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IAdminService, AdminService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IExerciseService, ExerciseService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
