@@ -32,6 +32,15 @@ public class RolesConfiguration : IEntityTypeConfiguration<ApplicationRole>
             ConcurrencyStamp = DefaultRoles.Trainer.ConcurrencyStamp,
             IsDefault = false,
             IsDeleted = false,
+        },
+        new ApplicationRole
+        {
+            Id = DefaultRoles.SuperAdmin.Id,
+            Name = DefaultRoles.SuperAdmin.Name,
+            NormalizedName = DefaultRoles.SuperAdmin.Name.ToUpper(),
+            ConcurrencyStamp = DefaultRoles.SuperAdmin.ConcurrencyStamp,
+            IsDefault = false,
+            IsDeleted = false,
         }
         );
     }

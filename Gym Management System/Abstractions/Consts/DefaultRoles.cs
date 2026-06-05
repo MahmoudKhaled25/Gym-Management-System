@@ -2,6 +2,13 @@
 
 public static class DefaultRoles
 {
+
+    public partial class SuperAdmin
+    {
+        public const string Name = nameof(SuperAdmin);
+        public const string Id = "019e95fd-0895-787c-8a4b-0eec89dc2a1d"; 
+        public const string ConcurrencyStamp = "019e95fd-0895-787c-8a4b-0eed79601c15";
+    }
     public partial class Admin
     {
         public const string Name = nameof(Admin);
