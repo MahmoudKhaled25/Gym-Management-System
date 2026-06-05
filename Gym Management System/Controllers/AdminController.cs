@@ -30,4 +30,10 @@ public class AdminController(IAdminService adminService) : ControllerBase
         var result = await _adminService.ToggleStatusAsync(id, cancellationToken);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
+    [HttpGet("Dashboard")]
+    public async Task<IActionResult> GetDashboardData(CancellationToken cancellationToken)
+    {
+        var result = await _adminService.GetDashboardAsync(cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
+    }
 }
