@@ -31,7 +31,7 @@ public class ExerciseController(IExerciseService exerciseService) : ControllerBa
     }
 
     [HttpPost("")]
-    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> Add([FromBody] ExerciseRequest request, CancellationToken cancellationToken)
     {
         var result = await _exerciseService.AddAsync(request, cancellationToken);
@@ -39,7 +39,7 @@ public class ExerciseController(IExerciseService exerciseService) : ControllerBa
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ExerciseRequest request, CancellationToken cancellationToken)
     {
         var result = await _exerciseService.UpdateAsync(id, request, cancellationToken);
@@ -47,7 +47,7 @@ public class ExerciseController(IExerciseService exerciseService) : ControllerBa
     }
 
     [HttpPut("{id}/toggle-status")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> ToggleStatus([FromRoute] int id, CancellationToken cancellationToken)
     {
         var result = await _exerciseService.ToggleStatusAsync(id, cancellationToken);

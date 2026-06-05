@@ -17,7 +17,7 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
     private readonly IWorkoutPlanService _workoutPlanService = workoutPlanService;
 
     [HttpGet("")]
-    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, [FromQuery] string? trainerId, CancellationToken cancellationToken)
     {
         if (User.IsInRole(DefaultRoles.Trainer.Name))
@@ -37,21 +37,21 @@ public class WorkoutPlanController(IWorkoutPlanService workoutPlanService) : Con
     }
 
     [HttpPost("")]
-    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> Add([FromBody] WorkoutPlanRequest request, CancellationToken cancellationToken)
     {
         var result = await _workoutPlanService.AddAsync(request, cancellationToken);
        return result.IsSuccess ? CreatedAtAction(nameof(GetAll), new { trainerId = request.TrainerId }, null) : result.ToProblem();
     }
     [HttpPut("{id}")]
-    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] WorkoutPlanRequest request, CancellationToken cancellationToken)
     {
         var result = await _workoutPlanService.UpdateAsync(id, request, cancellationToken);
         return result.IsSuccess ? NoContent() : result.ToProblem();
     }
     [HttpDelete("{id}")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
         var result = await _workoutPlanService.DeleteAsync(id, cancellationToken);

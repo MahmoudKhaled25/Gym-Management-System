@@ -34,21 +34,21 @@ public class SubscriptionRequestController(ISubscriptionRequestService subscript
 
 
     [HttpGet("")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> GetAllRequests([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
         var result = await _subscriptionRequestService.GetAllRequestsAsync(filters, cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     [HttpPut("{requestId}/approve")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
   public async Task<IActionResult> ApproveRequest(int requestId, CancellationToken cancellationToken)
     {
         var result = await _subscriptionRequestService.ApproveRequestAsync(requestId, cancellationToken);
         return result.IsSuccess ? Ok() : result.ToProblem();
     }
     [HttpPut("{requestId}/reject")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> RejectRequest(int requestId, CancellationToken cancellationToken)
     {
         var result = await _subscriptionRequestService.RejectRequestAsync(requestId, cancellationToken);

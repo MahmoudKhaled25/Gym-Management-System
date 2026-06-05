@@ -16,7 +16,7 @@ public class ProgressLogController(IProgressLogService progressLogService) : Con
     private readonly IProgressLogService _progressLogService = progressLogService;
 
     [HttpGet("")]
-    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name}")]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
         var result = await _progressLogService.GetAllAsync(filters, cancellationToken);

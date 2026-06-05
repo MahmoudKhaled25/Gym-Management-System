@@ -12,7 +12,7 @@ namespace Gym_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = DefaultRoles.Admin.Name)]
+[Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
 [EnableRateLimiting("General")]
 public class MemberController(IMemberService memberService) : ControllerBase
 {

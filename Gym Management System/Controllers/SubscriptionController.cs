@@ -19,7 +19,7 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
 
 
     [HttpGet("")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> GetAll([FromQuery] RequestFilters filters, CancellationToken cancellationToken)
     {
         var response = await _subscriptionService.GetAllAsync(filters, cancellationToken);
@@ -27,14 +27,14 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
     }
 
     [HttpGet("active")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> GetAllActive(CancellationToken cancellationToken)
     {
         var response = await _subscriptionService.GetAllActiveAsync(cancellationToken);
         return Ok(response.Value);
     }
     [HttpGet("{id}")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> GetById([FromRoute]int id,CancellationToken cancellationToken)
     {
         var result = await _subscriptionService.GetByIdAsync(id,cancellationToken);
@@ -49,14 +49,14 @@ public class SubscriptionController(ISubscriptionService subscriptionService) : 
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
     [HttpPost("")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> Add([FromBody] SubscriptionSendRequest request, CancellationToken cancellationToken)
     {
         var result = await _subscriptionService.AddAsync(request, cancellationToken);
         return result.IsSuccess ? Created() : result.ToProblem();
     }
     [HttpPut("{id}")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public async Task<IActionResult> Cancel([FromRoute]int id, CancellationToken cancellationToken)
     {
         var result = await _subscriptionService.CancelAsync(id, cancellationToken);

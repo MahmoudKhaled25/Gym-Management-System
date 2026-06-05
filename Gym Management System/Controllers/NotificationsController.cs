@@ -13,7 +13,7 @@ public class NotificationsController(IBackgroundJobClient backgroundJobClient) :
     private readonly IBackgroundJobClient _backgroundJobClient = backgroundJobClient;
 
     [HttpPost("send-offer")]
-    [Authorize(Roles = DefaultRoles.Admin.Name)]
+    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
     public IActionResult SendOffer([FromBody] SendOfferRequest request)
     {
         _backgroundJobClient.Enqueue<INotificationJobService>(
