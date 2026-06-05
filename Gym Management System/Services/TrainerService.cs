@@ -2,19 +2,20 @@
 using Gym_Management_System.Abstractions.Consts;
 using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Contracts.Trainer;
+using Gym_Management_System.Enums;
 using Gym_Management_System.Errors;
 using Gym_Management_System.Persistence;
 using GymManagementSystem.Abstractions;
 using GymManagementSystem.Contracts.Common;
+using GymManagementSystem.Contracts.Trainer;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Gym_Management_System.Services;
 
-public class TrainerService(UserManager<ApplicationUser> userManager,ApplicationDbContext context,RoleManager<ApplicationRole> roleManager,IMemoryCache memoryCache) : ITrainerService
+public class TrainerService(UserManager<ApplicationUser> userManager,ApplicationDbContext context,IMemoryCache memoryCache) : ITrainerService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly ApplicationDbContext _context = context;
-    private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
     private readonly IMemoryCache _memoryCache = memoryCache;
     private const string _allTrainersCacheKey = "Trainers_All";
     private const string _activeTrainersCacheKey = "Trainers_Active";
@@ -203,5 +204,21 @@ public class TrainerService(UserManager<ApplicationUser> userManager,Application
         _memoryCache.Remove(_allTrainersCacheKey);
         _memoryCache.Remove(_activeTrainersCacheKey);
         return Result.Success();
+    }
+
+    public async Task<Result<IEnumerable<TrainerMembersResponse>>> GetTrainerMembersAsync(string trainerId, CancellationToken cancellationToken = default)
+    {
+        var members = await _context.Subscriptions.
+                            Where(x => x.TrainerId == trainerId && x.Status == SubscriptionStatus.Active)
+                            .Select(x => new TrainerMembersResponse(
+                                x.UserId,
+                                x.User!.FirstName + " " + x.User.LastName,
+                                x.User.PhoneNumber,
+                                x.MembershipPlan!.Name,
+                                x.EndDate
+                                ))
+                            .AsNoTracking()
+                            .ToListAsync(cancellationToken);
+        return Result.Success(members.AsEnumerable());
     }
 }

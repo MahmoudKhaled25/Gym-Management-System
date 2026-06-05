@@ -3,6 +3,7 @@ using Gym_Management_System.Contracts.Account;
 using Gym_Management_System.Contracts.Trainer;
 using GymManagementSystem.Abstractions;
 using GymManagementSystem.Contracts.Common;
+using GymManagementSystem.Contracts.Trainer;
 
 namespace Gym_Management_System.Services;
 
@@ -19,4 +20,6 @@ public interface ITrainerService
     Task<Result> UpdateTrainerAsync(string trainerId,UpdateTrainerRequest request, CancellationToken cancellationToken = default);
 
     Task<Result> ToggleStatusAsync(string trainerId,CancellationToken cancellationToken = default);
+
+    Task<Result<IEnumerable<TrainerMembersResponse>>> GetTrainerMembersAsync(string trainerId, CancellationToken cancellationToken = default);
 }
