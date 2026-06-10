@@ -11,23 +11,22 @@ public class NotificationJobService(INotificationService notificationService, IL
 
     public async Task SendOfferToAllMembersAsync(string message)
     {
-        var members = await _context.Subscriptions
-            .Where(s => s.Status == SubscriptionStatus.Active
-                     && s.User!.PhoneNumber != null)
-            .Select(s => s.User!.PhoneNumber!)
-            .Distinct()
-            .ToListAsync();
+        var numbers = await _context.Users
+                 .Where(u => u.PhoneNumber != null)
+                 .Select(u => u.PhoneNumber!)
+                 .Distinct()
+                 .ToListAsync();
 
-        foreach (var member in members)
+        foreach (var number in numbers)
         {
             try
             {
-                await _notificationService.SendWhatsAppAsync(member, message);
-                _logger.LogInformation("Sent offer notification to {PhoneNumber}", member);
+                await _notificationService.SendWhatsAppAsync(number, message);
+                _logger.LogInformation("Sent offer notification to {PhoneNumber}", number);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send offer notification to {PhoneNumber}", member);
+                _logger.LogError(ex, "Failed to send offer notification to {PhoneNumber}", number);
             }
         }
     }
