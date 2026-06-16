@@ -12,11 +12,13 @@ public class Repository<T>(ApplicationDbContext context)
 {
     private readonly DbSet<T> _context = context.Set<T>();
 
+    public IQueryable<T> Query()
+       => _context.AsNoTracking();
     public async Task<T?> GetByIdAsync(int id) =>
         await _context.FindAsync(id);
 
     public async Task<IEnumerable<T>> GetAllAsync() =>
-        await _context.ToListAsync();
+        await _context.AsNoTracking().ToListAsync();
 
     public async Task AddAsync(T entity) =>
         await _context.AddAsync(entity);

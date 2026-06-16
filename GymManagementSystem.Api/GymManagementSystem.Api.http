@@ -29,3 +29,45 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan
+
+###
+
+@id=0
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/4
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/active
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/{{id}}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/{id}
+Content-Type: application/json
+
+{
+  //UpdatePlanCommand
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/4/toggle-status
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/membershipplan
+Content-Type: application/json
+
+{
+    "name": "Basic",
+    "description": "Access to gym equipment only",
+    "price": 520.00,
+    "durationInDays": 30
+}
+
+###
