@@ -1,0 +1,27 @@
+﻿using GymManagementSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace GymManagementSystem.Infrastructure.Persistence.Entities_Configurations;
+
+public class WorkoutPlanConfiguration : IEntityTypeConfiguration<WorkoutPlan>
+{
+    public void Configure(EntityTypeBuilder<WorkoutPlan> builder)
+    {
+        builder.Property(x => x.Name)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(x => x.Description)
+            .HasMaxLength(500);
+
+        builder.HasOne(x => x.Trainer)
+            .WithMany(x => x.WorkoutPlans)
+            .HasForeignKey(x => x.TrainerId)
+            .IsRequired(false);
+
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.WorkoutPlans)
+            .HasForeignKey(x => x.UserId);
+    }
+}

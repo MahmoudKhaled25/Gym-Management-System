@@ -30,13 +30,13 @@ public class ExerciseController(IExerciseService exerciseService) : ControllerBa
         return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
     }
 
-    [HttpPost("")]
-    [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
-    public async Task<IActionResult> Add([FromBody] ExerciseRequest request, CancellationToken cancellationToken)
-    {
-        var result = await _exerciseService.AddAsync(request, cancellationToken);
-        return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value) : result.ToProblem();
-    }
+    //[HttpPost("")]
+    //[Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]
+    //public async Task<IActionResult> Add([FromBody] ExerciseRequest request, CancellationToken cancellationToken)
+    //{
+    //    var result = await _exerciseService.AddAsync(request, cancellationToken);
+    //    return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value) : result.ToProblem();
+    //}
 
     [HttpPut("{id}")]
     [Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.Trainer.Name},{DefaultRoles.SuperAdmin.Name}")]

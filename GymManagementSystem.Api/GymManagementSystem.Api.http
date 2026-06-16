@@ -1,0 +1,31 @@
+﻿@GymManagementSystem.Api_HostAddress = https://localhost:7094
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/exercise
+Content-Type: application/json
+
+{
+  "name":"Triceps Single PushDown With Rope",
+  "description":"Very Good For Triceps",
+  "muscleGroup":"Triceps"
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/exercise?PageNumber=2
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/exercise/5
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/exercise/5
+Content-Type: application/json
+
+{
+   "name": "Shoulder Press",
+  "description": "Overhead pressing exercise for front Dealt",
+  "muscleGroup": "Shoulders"
+}
+
+###
