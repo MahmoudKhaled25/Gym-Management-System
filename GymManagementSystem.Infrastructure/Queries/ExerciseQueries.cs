@@ -16,21 +16,44 @@ public class ExerciseQueries(ApplicationDbContext context) : IExerciseQueries
     public async Task<PaginatedList<ExerciseDto>> GetAllAsync(RequestFilters filters, CancellationToken cancellationToken = default)
     {
         var query = _context.Exercises
-            .AsNoTracking()
-            .Where(x =>
-                string.IsNullOrEmpty(filters.SearchValue) ||
-                x.Name.Contains(filters.SearchValue) ||
-                x.Description.Contains(filters.SearchValue) ||
-                x.MuscleGroup.Contains(filters.SearchValue));
+            .AsNoTracking() 
+            .Where(x => string.IsNullOrWhiteSpace(filters.SearchValue) ||
+                        x.Name.Contains(filters.SearchValue) ||
+                        x.Description.Contains(filters.SearchValue) ||
+                        x.MuscleGroup.Contains(filters.SearchValue));
 
-        var sortedQuery = query.ApplySort(
-            filters.SortColumn,
-            filters.SortDirection);
+        query = filters.SortColumn?.ToLower() switch
+        {
+            "name" => filters.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.Name)
+                : query.OrderByDescending(x => x.Name),
+
+            "description" => filters.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.Description)
+                : query.OrderByDescending(x => x.Description),
+
+            "musclegroup" => filters.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.MuscleGroup)
+                : query.OrderByDescending(x => x.MuscleGroup),
+
+            "id" => filters.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.Id)
+                : query.OrderByDescending(x => x.Id),
+
+            _ => query.OrderBy(x => x.Name) 
+        };
+
+        var dtoQuery = query.Select(x => new ExerciseDto(
+            x.Id,
+            x.Name,
+            x.Description,
+            x.MuscleGroup
+        ));
 
         return await PaginatedList<ExerciseDto>.CreateAsync(
-            sortedQuery.ProjectToType<ExerciseDto>(),
+            dtoQuery,
             filters.PageNumber,
             filters.PageSize,
             cancellationToken);
     }
-    }
+}

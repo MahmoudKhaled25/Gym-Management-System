@@ -71,3 +71,46 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/progresslog
+Content-Type: application/json
+
+{
+    "weight": 65.5,
+    "notes": "Feeling great!",
+    "logDate": "2026-06-15"
+}
+
+###
+
+
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/progresslog/2002
+Content-Type: application/json
+
+{
+    "weight": 64.0,
+    "notes": "Feeling great!",
+    "logDate": "2026-06-15"
+}
+
+###
+
+@progressLogId=0
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/progresslog/2002
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog?PageSize=4&PageNumber=2&SortColumn=weight&SortDirection=ASC
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog/me
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog/me
+
+###
