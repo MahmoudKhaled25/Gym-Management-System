@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
-namespace GymManagementSystem.Controllers;
+namespace GymManagementSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

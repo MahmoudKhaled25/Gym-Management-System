@@ -114,3 +114,39 @@ GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog/me
 GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog/me
 
 ###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/5/exercises
+Content-Type: application/json
+
+{
+  "exerciseId":5,
+  "sets":2,
+  "reps":10,
+  "weight":50.0,
+  "restTime":120.0
+  
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1
+Content-Type: application/json
+
+{
+  "sets":5,
+  "reps":10,
+  "weight":60.0,
+  "restTime":90.0
+}
+
+###
+
+@workoutPlanId=0
+GET {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1/exercises
+
+###
+
+@workoutPlanExerciseId=0
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1002
+
+###
