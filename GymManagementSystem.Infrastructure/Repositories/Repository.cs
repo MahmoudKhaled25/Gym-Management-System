@@ -3,6 +3,7 @@ using GymManagementSystem.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace GymManagementSystem.Infrastructure.Repositories;
@@ -28,4 +29,14 @@ public class Repository<T>(ApplicationDbContext context)
 
     public void Delete(T entity) =>
         _context.Remove(entity);
+
+    public void DeleteRange(IEnumerable<T> entities) =>
+       _context.RemoveRange(entities);
+
+    public async Task<T?> FirstOrDefaultAsync(
+    Expression<Func<T, bool>> predicate,
+    CancellationToken cancellationToken = default)
+    {
+        return await _context.FirstOrDefaultAsync(predicate, cancellationToken);
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using GymManagementSystem.Application.Exercises.Queries;
 using GymManagementSystem.Application.ProgressLogs.Queries;
+using GymManagementSystem.Application.WorkoutPlans.Queries;
 using GymManagementSystem.Domain.Entities;
 using GymManagementSystem.Domain.Repositories;
 using GymManagementSystem.Infrastructure.Persistence;
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtention
         services.AddScoped<IRepository<Exercise>, Repository<Exercise>>();
         services.AddScoped<IExerciseQueries, ExerciseQueries>();
         services.AddScoped<IProgressLogQueries, ProgressLogQueries>();
+        services.AddScoped<IWorkoutPlanQueries, WorkoutPlanQueries>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddMemoryCache();

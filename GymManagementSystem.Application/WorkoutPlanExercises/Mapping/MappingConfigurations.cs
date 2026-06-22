@@ -8,6 +8,7 @@ public class MappingConfigurations : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<AddWorkoutPlanExerciseCommand, WorkoutPlanExercise>();
+        config.NewConfig<AddWorkoutPlanExerciseCommand, WorkoutPlanExercise>()
+            .Map(dest => dest.WorkoutPlanId, src => src.WorkoutPlanId);
     }
 }

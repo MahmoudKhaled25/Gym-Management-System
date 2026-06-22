@@ -150,3 +150,49 @@ GET {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1/exercises
 DELETE {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1002
 
 ###
+
+@trainerId=string
+GET {{GymManagementSystem.Api_HostAddress}}/api/workoutplan
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/workoutplan/me
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/{workoutPlanId}/exercises
+Content-Type: application/json
+
+{
+  //AddWorkoutPlanExerciseCommand
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/workoutplan
+Content-Type: application/json
+
+{
+  "name":"Upper&Lower",
+  "description":"a Plan that allows you to train each muscle twice a week",
+  "trainerId":"019d9432-8dd9-73c5-b6e8-347d4ac603e4",
+  "memberId":"019d7f6d-a87b-7e4b-b4d5-c111c3fde6e0"
+}
+
+###
+
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/workoutplan/1008
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/workoutplan/3
+Content-Type: application/json
+
+{
+  "name":"Muscle Building Program",
+  "description":"Advanced hypertrophy program for muscle gain and strength",
+  "trainerId":"019d9442-9b5d-7ce1-993e-06049851112e",
+  "memberId":"019d8ea6-cbbe-7bae-8e61-691006ac9b48"
+}
+
+###
