@@ -1,6 +1,7 @@
 ﻿using GymManagementSystem.Domain.Entities;
 using GymManagementSystem.Domain.Repositories;
 using GymManagementSystem.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,6 +12,9 @@ namespace GymManagementSystem.Infrastructure.Repositories;
 public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 {
     private readonly ConcurrentDictionary<string, object> _repositories = new();
+
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default) => await context.Database.BeginTransactionAsync(cancellationToken);
+   
 
     public IRepository<T> Repository<T>() where T : class
     {

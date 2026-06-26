@@ -196,3 +196,47 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/active-trainers
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e/members
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/trainer
+Content-Type: application/json
+
+{
+    "email":"tts@gmail.com",
+    "password":"P@ssword123",
+    "firstName":"Moaz",
+    "lastName":"Ahmed",
+    "specialization":"Kick Boxing"
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e/toggle-status
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e
+Content-Type: application/json
+
+{
+ "firstName": "Majdy",
+      "lastName": "Mohammed",
+      "specialization": "BodyBuilding Coach"
+}
+
+###

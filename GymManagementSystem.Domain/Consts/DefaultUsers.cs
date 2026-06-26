@@ -1,4 +1,4 @@
-﻿namespace GymManagementSystem.Infrastructure.Consts;
+﻿namespace GymManagementSystem.Domain.Consts;
 
 public static class DefaultUsers
 {

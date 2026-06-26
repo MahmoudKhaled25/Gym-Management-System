@@ -1,11 +1,13 @@
 ﻿using GymManagementSystem.Application.Exercises.Queries;
 using GymManagementSystem.Application.ProgressLogs.Queries;
+using GymManagementSystem.Application.Trainers.Queries;
 using GymManagementSystem.Application.WorkoutPlans.Queries;
 using GymManagementSystem.Domain.Entities;
 using GymManagementSystem.Domain.Repositories;
 using GymManagementSystem.Infrastructure.Persistence;
 using GymManagementSystem.Infrastructure.Queries;
 using GymManagementSystem.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,14 +29,19 @@ public static class ServiceCollectionExtention
         //     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         // });
 
-
+        services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRepository<Exercise>, Repository<Exercise>>();
         services.AddScoped<IExerciseQueries, ExerciseQueries>();
         services.AddScoped<IProgressLogQueries, ProgressLogQueries>();
+        services.AddScoped<ITrainerQueries, TrainerQueries>();
         services.AddScoped<IWorkoutPlanQueries, WorkoutPlanQueries>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddMemoryCache();
+
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
 
         return services;

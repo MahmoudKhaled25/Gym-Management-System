@@ -1,5 +1,5 @@
-﻿using GymManagementSystem.Domain.Entities;
-using GymManagementSystem.Infrastructure.Consts;
+﻿using GymManagementSystem.Domain.Consts;
+using GymManagementSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
