@@ -13,10 +13,11 @@ public interface IIdentityService
 
     Task<IdentityResult> UpdateAsync(ApplicationUser user);
 
-  Task<IdentityResult> AddToRoleAsync(ApplicationUser user,string role);
+    Task<IdentityResult> AddToRoleAsync(ApplicationUser user,string role);
 
     Task<ApplicationUser?> GetUserWithTrainerAsync(string userId);
 
+    Task<bool> IsInRoleAsync(ApplicationUser user, string role);
 
     Task<ApplicationUser?> GetByIdAsync(string id);
 

@@ -1,4 +1,5 @@
 ﻿using GymManagementSystem.Application.Exercises.Queries;
+using GymManagementSystem.Application.Members.Queries;
 using GymManagementSystem.Application.ProgressLogs.Queries;
 using GymManagementSystem.Application.Trainers.Queries;
 using GymManagementSystem.Application.WorkoutPlans.Queries;
@@ -32,6 +33,7 @@ public static class ServiceCollectionExtention
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRepository<Exercise>, Repository<Exercise>>();
         services.AddScoped<IExerciseQueries, ExerciseQueries>();
+        services.AddScoped<IMemberQueries, MemberQueries>();
         services.AddScoped<IProgressLogQueries, ProgressLogQueries>();
         services.AddScoped<ITrainerQueries, TrainerQueries>();
         services.AddScoped<IWorkoutPlanQueries, WorkoutPlanQueries>();

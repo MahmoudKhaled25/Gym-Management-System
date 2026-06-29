@@ -24,7 +24,7 @@ public class MemberService(UserManager<ApplicationUser> userManager,SignInManage
     public async Task<Result<PaginatedList<MemberSummaryResponse>>> GetAllMembersAsync(RequestFilters filters,CancellationToken cancellationToken = default)
     {
         var query = _context.Users
-    .Where(u => _context.UserRoles
+         .Where(u => _context.UserRoles
         .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, r.Name })
         .Any(x => x.UserId == u.Id && x.Name == DefaultRoles.Member.Name) &&
                 (string.IsNullOrEmpty(filters.SearchValue) ||

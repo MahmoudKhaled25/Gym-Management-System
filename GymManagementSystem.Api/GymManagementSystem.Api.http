@@ -240,3 +240,37 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/member?sortDirection=DESC&sortColumn=email
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/member/active-members
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/member/019f13ec-3b75-767f-9013-0d7d51b4c41d
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/member
+Content-Type: application/json
+
+{
+
+  "email": "mahmoud.khaled@example.com",
+  "password": "P@ssword123",
+  "firstName": "Mahmoud",
+  "lastName": "Khaled",
+  "dateOfBirth": "2003-08-15",
+  "weight": 78.5,
+  "height": 180,
+  "gender": 0,
+  "phoneNumber": "01012345678"
+
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/member/019f13ec-3b75-767f-9013-0d7d51b4c41d/toggle-status
+
+###

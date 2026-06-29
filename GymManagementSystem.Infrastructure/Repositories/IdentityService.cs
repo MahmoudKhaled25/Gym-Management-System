@@ -41,5 +41,7 @@ public class IdentityService(UserManager<ApplicationUser> userManager,Applicatio
     }
 
     public async Task<IdentityResult> UpdateAsync(ApplicationUser user) => await _userManager.UpdateAsync(user);
+
+    public async Task<bool> IsInRoleAsync(ApplicationUser user, string role) => await _userManager.IsInRoleAsync(user, role);
    
 }
