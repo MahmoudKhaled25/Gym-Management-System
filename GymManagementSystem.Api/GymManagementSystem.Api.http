@@ -274,3 +274,32 @@ Content-Type: application/json
 PUT {{GymManagementSystem.Api_HostAddress}}/api/member/019f13ec-3b75-767f-9013-0d7d51b4c41d/toggle-status
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription?pagesize=5&sortcolumn=username&pagenumber=1
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription/active
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription/me
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription/1
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscription/2002
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscription/2004/change-trainer
+Content-Type: application/json
+
+{
+  "trainerId":"019d9442-9b5d-7ce1-993e-06049851112e"
+}
+
+###

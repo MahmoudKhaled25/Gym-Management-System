@@ -18,4 +18,6 @@ public interface IRepository<T> where T : class
     Task<T?> FirstOrDefaultAsync(
     Expression<Func<T, bool>> predicate,
     CancellationToken cancellationToken = default);
+
+    Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
 }

@@ -41,5 +41,9 @@ public class Repository<T>(ApplicationDbContext context)
     {
         return await _context.FirstOrDefaultAsync(predicate, cancellationToken);
     }
-   
+    public async Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _context.SingleOrDefaultAsync(predicate, cancellationToken);
+    }
+
 }
