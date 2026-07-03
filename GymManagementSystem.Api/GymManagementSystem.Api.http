@@ -303,3 +303,29 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/me
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest
+Content-Type: application/json
+
+{
+  "membershipPlanId":2
+}
+
+###
+
+@requestId=0
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/2/approve
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/2/reject
+
+###

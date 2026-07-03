@@ -9,10 +9,8 @@ using GymManagementSystem.Application.Subscriptions.Queries.GetMySubscription;
 using GymManagementSystem.Application.Subscriptions.Queries.GetSubscriptionById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
-using System.Security.Claims;
 
-namespace Gym_Management_System.Controllers;
+namespace GymManagementSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

@@ -14,4 +14,8 @@ public record SubscriptionErrors
 
     public static readonly Error PlanHasNoTrainer =
    new("Subscription.PlanHasNoTrainer", "Plan Has No Trainer", StatusCodes.Status400BadRequest);
+
+    public static readonly Error UserAlreadyHasActiveSubscription =
+           new("Subscription.UserAlreadyHasActiveSubscription", "User Already Has Active Subscription", StatusCodes.Status400BadRequest);
+
 }
