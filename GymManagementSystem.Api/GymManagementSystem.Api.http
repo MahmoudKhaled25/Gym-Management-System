@@ -365,3 +365,30 @@ POST {{GymManagementSystem.Api_HostAddress}}/api/account/profile-image
 DELETE {{GymManagementSystem.Api_HostAddress}}/api/account/profile-image
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/admin
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/admin/Dashboard
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/admin
+Content-Type: application/json
+
+{
+  "firstName":"Abdo",
+  "lastName":"Ahmed",
+  "email":"Admin90@Gym.com",
+  "password":"P@ssowrd123",
+  "phoneNumber":"01155679842",
+  "gender":0
+
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/admin/019f3313-ea42-71e9-baa4-6bad605af2e9/toggle-status
+
+###
