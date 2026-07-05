@@ -3,11 +3,8 @@ using GymManagementSystem.Domain.Repositories;
 using GymManagementSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace GymManagementSystem.Infrastructure.Repositories;
+namespace GymManagementSystem.Infrastructure.Services;
 
 public class IdentityService(UserManager<ApplicationUser> userManager,ApplicationDbContext context) : IIdentityService
 {
@@ -16,6 +13,8 @@ public class IdentityService(UserManager<ApplicationUser> userManager,Applicatio
 
     public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password) => await _userManager.CreateAsync(user, password);
     
+
+    public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string oldPassword, string newPassword) => await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
 
     public async Task<ApplicationUser?> GetByIdAsync(string id) => await _userManager.FindByIdAsync(id);
 

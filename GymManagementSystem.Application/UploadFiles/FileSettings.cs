@@ -1,4 +1,4 @@
-﻿namespace GymManagementSystem.Infrastructure.Settings;
+﻿namespace GymManagementSystem.Application.UploadFiles;
 
 public static class FileSettings
 {

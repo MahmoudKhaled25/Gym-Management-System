@@ -329,3 +329,39 @@ PUT {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/2/approve
 PUT {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/2/reject
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/account
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/account
+Content-Type: application/json
+
+{
+    "firstName":"Mariam",
+    "lastName":"Khaled",
+    "dateOfBirth":"2005-10-10",
+    "weight": 65.0,
+    "height": 156.0,
+    "phoneNumber":"01234567110"
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/account/change-password
+Content-Type: application/json
+
+{
+  "oldPassword":"P@ssword1234",
+  "newPassword":"P@ssword1234"
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/account/profile-image
+
+###
+
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/account/profile-image
+
+###

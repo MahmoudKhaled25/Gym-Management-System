@@ -11,6 +11,8 @@ public interface IIdentityService
 
     Task<IdentityResult> CreateAsync(ApplicationUser user,string password);
 
+    Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string oldPassword, string newPassword);
+
     Task<IdentityResult> UpdateAsync(ApplicationUser user);
 
     Task<IdentityResult> AddToRoleAsync(ApplicationUser user,string role);

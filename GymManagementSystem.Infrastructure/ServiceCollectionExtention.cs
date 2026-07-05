@@ -1,4 +1,6 @@
-﻿using GymManagementSystem.Application.Exercises.Queries;
+﻿using GymManagementSystem.Application.Accounts.Queries;
+using GymManagementSystem.Application.Exercises.Queries;
+using GymManagementSystem.Application.Interfaces;
 using GymManagementSystem.Application.Members.Queries;
 using GymManagementSystem.Application.ProgressLogs.Queries;
 using GymManagementSystem.Application.SubscriptionRequests.Queries;
@@ -10,6 +12,7 @@ using GymManagementSystem.Domain.Repositories;
 using GymManagementSystem.Infrastructure.Persistence;
 using GymManagementSystem.Infrastructure.Queries;
 using GymManagementSystem.Infrastructure.Repositories;
+using GymManagementSystem.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,9 +35,11 @@ public static class ServiceCollectionExtention
         //     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         // });
 
+        services.AddScoped<IAccountQueries, AccountQueries>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRepository<Exercise>, Repository<Exercise>>();
         services.AddScoped<IExerciseQueries, ExerciseQueries>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IMemberQueries, MemberQueries>();
         services.AddScoped<IProgressLogQueries, ProgressLogQueries>();
         services.AddScoped<ISubscriptionQueries, SubscriptionQueries>();

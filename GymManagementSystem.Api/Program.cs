@@ -1,5 +1,6 @@
 using GymManagementSystem.Application;
 using GymManagementSystem.Infrastructure;
+using Microsoft.Extensions.FileProviders;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +28,12 @@ app.UseSerilogRequestLogging();
 
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+    RequestPath = ""
+});
 app.UseAuthorization();
 
 app.MapControllers();
