@@ -5,7 +5,9 @@ using GymManagementSystem.Application.MembershipPlans.Commands.Update_Plan;
 using GymManagementSystem.Application.MembershipPlans.Queries.Get_Active_Plans;
 using GymManagementSystem.Application.MembershipPlans.Queries.Get_All_Plans;
 using GymManagementSystem.Application.MembershipPlans.Queries.Get_By_Id;
+using GymManagementSystem.Domain.Consts;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -13,8 +15,8 @@ namespace GymManagementSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
-//[EnableRateLimiting("General")]
+[Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
+[EnableRateLimiting("General")]
 public class MembershipPlanController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;

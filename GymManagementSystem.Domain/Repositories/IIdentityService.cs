@@ -24,4 +24,14 @@ public interface IIdentityService
     Task<ApplicationUser?> GetByIdAsync(string id);
 
     Task<IList<string>> GetRolesAsync(string userId);
+
+    Task<ApplicationUser?> FindByEmailAsync(string email);
+    Task<SignInResult> PasswordSignInAsync(ApplicationUser user, string password, bool lockoutOnFailure);
+    Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user);
+    Task<IdentityResult> ConfirmEmailAsync(ApplicationUser user, string token);
+    Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user);
+    Task<IdentityResult> ResetPasswordAsync(ApplicationUser user, string token, string newPassword);
+    Task<bool> VerifyUserTokenAsync(ApplicationUser user, string tokenProvider, string purpose, string token);
+    Task<string> GenerateUserTokenAsync(ApplicationUser user, string tokenProvider, string purpose);
+    Task<ApplicationUser?> GetUserWithRefreshTokensAsync(string userId);
 }

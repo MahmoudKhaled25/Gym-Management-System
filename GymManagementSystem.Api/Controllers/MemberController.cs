@@ -5,6 +5,7 @@ using GymManagementSystem.Application.Members.Commands.MemberToggleStatus;
 using GymManagementSystem.Application.Members.Queries.GetActiveMembers;
 using GymManagementSystem.Application.Members.Queries.GetAllMembers;
 using GymManagementSystem.Application.Members.Queries.GetMemberById;
+using GymManagementSystem.Domain.Consts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,8 @@ namespace GymManagementSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
-//[EnableRateLimiting("General")]
+[Authorize(Roles = $"{DefaultRoles.Admin.Name},{DefaultRoles.SuperAdmin.Name}")]
+[EnableRateLimiting("General")]
 public class MemberController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;

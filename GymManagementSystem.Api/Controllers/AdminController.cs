@@ -3,14 +3,16 @@ using GymManagementSystem.Application.Admins.Commands.AddAdmin;
 using GymManagementSystem.Application.Admins.Commands.ToggleStatus;
 using GymManagementSystem.Application.Admins.Queries.GetAllAdmins;
 using GymManagementSystem.Application.Admins.Queries.GetDashboardData;
+using GymManagementSystem.Domain.Consts;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementSystem.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(Roles = DefaultRoles.SuperAdmin.Name)]
+[Authorize(Roles = DefaultRoles.SuperAdmin.Name)]
 public class AdminController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;

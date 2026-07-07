@@ -392,3 +392,39 @@ Content-Type: application/json
 PUT {{GymManagementSystem.Api_HostAddress}}/api/admin/019f3313-ea42-71e9-baa4-6bad605af2e9/toggle-status
 
 ###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/account
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email":"MahmoudKhaled@Gym.com",
+  "password":"P@ssword123"
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  //RegisterCommand
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/my-members
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  //LoginCommand
+}
+
+###
