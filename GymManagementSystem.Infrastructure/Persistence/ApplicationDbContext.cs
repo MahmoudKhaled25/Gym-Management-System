@@ -1,0 +1,49 @@
+﻿using GymManagementSystem.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+
+namespace GymManagementSystem.Infrastructure.Persistence;
+
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
+{
+    public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<MembershipPlan> MembershipPlans { get; set; }
+    public DbSet<ProgressLog> ProgressLogs { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+
+    public DbSet<SubscriptionRequest> SubscriptionRequests { get; set; }
+    public DbSet<Trainer> Trainers { get; set; }
+    public DbSet<WorkoutPlan> WorkoutPlans { get; set; }
+    public DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
+
+    public DbSet<UploadedFile> UploadedFiles { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        var cascadeFKs = modelBuilder.Model.GetEntityTypes()
+            .SelectMany(e => e.GetForeignKeys())
+            .Where(fk => fk.DeleteBehavior == DeleteBehavior.Cascade && !fk.IsOwnership);
+
+        foreach (var fk in cascadeFKs)
+            fk.DeleteBehavior = DeleteBehavior.Restrict;
+
+        base.OnModelCreating(modelBuilder);
+    }
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker.Entries<ApplicationUser>()
+            .Where(e => e.State == EntityState.Added);
+
+        foreach (var entry in entries)
+        {
+            entry.Entity.Id = Guid.CreateVersion7().ToString();
+            entry.Entity.SecurityStamp = Guid.CreateVersion7().ToString();
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
+    }
+}

@@ -1,0 +1,439 @@
+﻿@GymManagementSystem.Api_HostAddress = https://localhost:7094
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/exercise
+Content-Type: application/json
+
+{
+  "name":"Triceps Single PushDown With Rope",
+  "description":"Very Good For Triceps",
+  "muscleGroup":"Triceps"
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/exercise?PageNumber=2
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/exercise/5
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/exercise/5
+Content-Type: application/json
+
+{
+   "name": "Shoulder Press",
+  "description": "Overhead pressing exercise for front Dealt",
+  "muscleGroup": "Shoulders"
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan
+
+###
+
+@id=0
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/4
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/active
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/{{id}}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/{id}
+Content-Type: application/json
+
+{
+  //UpdatePlanCommand
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/membershipplan/4/toggle-status
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/membershipplan
+Content-Type: application/json
+
+{
+    "name": "Basic",
+    "description": "Access to gym equipment only",
+    "price": 520.00,
+    "durationInDays": 30
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/progresslog
+Content-Type: application/json
+
+{
+    "weight": 65.5,
+    "notes": "Feeling great!",
+    "logDate": "2026-06-15"
+}
+
+###
+
+
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/progresslog/2002
+Content-Type: application/json
+
+{
+    "weight": 64.0,
+    "notes": "Feeling great!",
+    "logDate": "2026-06-15"
+}
+
+###
+
+@progressLogId=0
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/progresslog/2002
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog?PageSize=4&PageNumber=2&SortColumn=weight&SortDirection=ASC
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog/me
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/progresslog/me
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/5/exercises
+Content-Type: application/json
+
+{
+  "exerciseId":5,
+  "sets":2,
+  "reps":10,
+  "weight":50.0,
+  "restTime":120.0
+  
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1
+Content-Type: application/json
+
+{
+  "sets":5,
+  "reps":10,
+  "weight":60.0,
+  "restTime":90.0
+}
+
+###
+
+@workoutPlanId=0
+GET {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1/exercises
+
+###
+
+@workoutPlanExerciseId=0
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/1002
+
+###
+
+@trainerId=string
+GET {{GymManagementSystem.Api_HostAddress}}/api/workoutplan
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/workoutplan/me
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/workoutplanexercises/{workoutPlanId}/exercises
+Content-Type: application/json
+
+{
+  //AddWorkoutPlanExerciseCommand
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/workoutplan
+Content-Type: application/json
+
+{
+  "name":"Upper&Lower",
+  "description":"a Plan that allows you to train each muscle twice a week",
+  "trainerId":"019d9432-8dd9-73c5-b6e8-347d4ac603e4",
+  "memberId":"019d7f6d-a87b-7e4b-b4d5-c111c3fde6e0"
+}
+
+###
+
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/workoutplan/1008
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/workoutplan/3
+Content-Type: application/json
+
+{
+  "name":"Muscle Building Program",
+  "description":"Advanced hypertrophy program for muscle gain and strength",
+  "trainerId":"019d9442-9b5d-7ce1-993e-06049851112e",
+  "memberId":"019d8ea6-cbbe-7bae-8e61-691006ac9b48"
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/active-trainers
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e/members
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/trainer
+Content-Type: application/json
+
+{
+    "email":"tts@gmail.com",
+    "password":"P@ssword123",
+    "firstName":"Moaz",
+    "lastName":"Ahmed",
+    "specialization":"Kick Boxing"
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e/toggle-status
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/trainer/019d9442-9b5d-7ce1-993e-06049851112e
+Content-Type: application/json
+
+{
+ "firstName": "Majdy",
+      "lastName": "Mohammed",
+      "specialization": "BodyBuilding Coach"
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/member?sortDirection=DESC&sortColumn=email
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/member/active-members
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/member/019f13ec-3b75-767f-9013-0d7d51b4c41d
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/member
+Content-Type: application/json
+
+{
+
+  "email": "mahmoud.khaled@example.com",
+  "password": "P@ssword123",
+  "firstName": "Mahmoud",
+  "lastName": "Khaled",
+  "dateOfBirth": "2003-08-15",
+  "weight": 78.5,
+  "height": 180,
+  "gender": 0,
+  "phoneNumber": "01012345678"
+
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/member/019f13ec-3b75-767f-9013-0d7d51b4c41d/toggle-status
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription?pagesize=5&sortcolumn=username&pagenumber=1
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription/active
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription/me
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscription/1
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscription/2002
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscription/2004/change-trainer
+Content-Type: application/json
+
+{
+  "trainerId":"019d9442-9b5d-7ce1-993e-06049851112e"
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/me
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest
+Content-Type: application/json
+
+{
+  "membershipPlanId":2
+}
+
+###
+
+@requestId=0
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/2/approve
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/subscriptionrequest/2/reject
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/account
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/account
+Content-Type: application/json
+
+{
+    "firstName":"Mariam",
+    "lastName":"Khaled",
+    "dateOfBirth":"2005-10-10",
+    "weight": 65.0,
+    "height": 156.0,
+    "phoneNumber":"01234567110"
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/account/change-password
+Content-Type: application/json
+
+{
+  "oldPassword":"P@ssword1234",
+  "newPassword":"P@ssword1234"
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/account/profile-image
+
+###
+
+DELETE {{GymManagementSystem.Api_HostAddress}}/api/account/profile-image
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/admin
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/admin/Dashboard
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/admin
+Content-Type: application/json
+
+{
+  "firstName":"Abdo",
+  "lastName":"Ahmed",
+  "email":"Admin90@Gym.com",
+  "password":"P@ssowrd123",
+  "phoneNumber":"01155679842",
+  "gender":0
+
+}
+
+###
+
+PUT {{GymManagementSystem.Api_HostAddress}}/api/admin/019f3313-ea42-71e9-baa4-6bad605af2e9/toggle-status
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/account
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email":"MahmoudKhaled@Gym.com",
+  "password":"P@ssword123"
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  //RegisterCommand
+}
+
+###
+
+GET {{GymManagementSystem.Api_HostAddress}}/api/trainer/my-members
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  //LoginCommand
+}
+
+###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/notifications/send-offer
+Content-Type: application/json
+
+{
+  "message":"hi at 8 am"
+}
+
+###

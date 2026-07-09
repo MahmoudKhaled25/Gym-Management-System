@@ -1,0 +1,24 @@
+﻿using GymManagementSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace GymManagementSystem.Infrastructure.Persistence.Entities_Configurations;
+
+public class ProgressLogConfiguration : IEntityTypeConfiguration<ProgressLog>
+{
+    public void Configure(EntityTypeBuilder<ProgressLog> builder)
+    {
+        builder.Property(x => x.Notes)
+            .HasMaxLength(500);
+
+        builder.Property(x => x.Weight)
+            .HasColumnType("decimal(5,2)");
+
+        builder.Property(x => x.LogDate)
+            .HasDefaultValueSql("CAST(GETUTCDATE() AS DATE)");
+
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.ProgressLogs)
+            .HasForeignKey(x => x.UserId);
+    }
+}
