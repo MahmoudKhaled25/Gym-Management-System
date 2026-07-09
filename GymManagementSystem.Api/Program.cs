@@ -1,5 +1,8 @@
 using GymManagementSystem.Application;
+using GymManagementSystem.Application.Interfaces;
 using GymManagementSystem.Infrastructure;
+using Hangfire;
+using HangfireBasicAuthenticationFilter;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 
@@ -34,6 +37,32 @@ app.UseStaticFiles(new StaticFileOptions
         Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
     RequestPath = ""
 });
+app.UseHangfireDashboard("/jobs", new DashboardOptions
+{
+    Authorization = [
+        new HangfireCustomBasicAuthenticationFilter
+        {
+            User = app.Configuration.GetValue<string>("HangfireSettings:Username"),
+            Pass = app.Configuration.GetValue<string>("HangfireSettings:Password")
+        }
+    ],
+    DashboardTitle = "Gym Management Dashboard"
+});
+
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using var scope = scopeFactory.CreateScope();
+var subscriptionJobService = scope.ServiceProvider.GetRequiredService<ISubscriptionJobService>();
+
+RecurringJob.AddOrUpdate(
+    "expire-subscriptions",
+    () => subscriptionJobService.ExpireSubscriptionsAsync(),
+    Cron.Daily());
+
+RecurringJob.AddOrUpdate(
+    "notify-expiring-subscriptions",
+    () => subscriptionJobService.NotifyExpiringSubscriptionsAsync(),
+     Cron.Daily());
+
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();

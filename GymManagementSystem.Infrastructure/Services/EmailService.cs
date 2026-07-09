@@ -2,17 +2,20 @@
 using GymManagementSystem.Domain.Entities;
 using GymManagementSystem.Infrastructure.Settings;
 using GymManagementSystem.Infrastructure.Templates;
+using MailKit.Security;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using MailKit.Security;
 
 namespace GymManagementSystem.Infrastructure.Services;
 
-public class EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger) : IEmailService
+public class EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger, IWebHostEnvironment environment ) : IEmailService
 {
     private readonly EmailSettings _emailSettings = emailSettings.Value;
     private readonly ILogger<EmailService> _logger = logger;
+    private readonly IWebHostEnvironment _environment = environment;
 
     public async Task SendConfirmationEmailAsync(ApplicationUser user, string confirmationLink)
     {
@@ -39,7 +42,11 @@ public class EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailSe
 
         using var client = new MailKit.Net.Smtp.SmtpClient();
         _logger.LogInformation("Sending Email To {email}", to);
-        client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+        if (_environment.IsDevelopment())
+        {
+            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            client.CheckCertificateRevocation = false;
+        }
 
         await client.ConnectAsync(
             _emailSettings.Host,

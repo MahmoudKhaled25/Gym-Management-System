@@ -428,3 +428,12 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{GymManagementSystem.Api_HostAddress}}/api/notifications/send-offer
+Content-Type: application/json
+
+{
+  "message":"hi at 8 am"
+}
+
+###

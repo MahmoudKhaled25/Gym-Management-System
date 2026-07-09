@@ -4,6 +4,7 @@ using GymManagementSystem.Application.Auth.Abstractions;
 using GymManagementSystem.Application.Exercises.Queries;
 using GymManagementSystem.Application.Interfaces;
 using GymManagementSystem.Application.Members.Queries;
+using GymManagementSystem.Application.Notifications.Interfaces;
 using GymManagementSystem.Application.ProgressLogs.Queries;
 using GymManagementSystem.Application.SubscriptionRequests.Queries;
 using GymManagementSystem.Application.Subscriptions.Queries;
@@ -17,6 +18,7 @@ using GymManagementSystem.Infrastructure.Queries;
 using GymManagementSystem.Infrastructure.Repositories;
 using GymManagementSystem.Infrastructure.Services;
 using GymManagementSystem.Infrastructure.Settings;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -68,9 +70,12 @@ public static class ServiceCollectionExtention
         services.AddScoped<IExerciseQueries, ExerciseQueries>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IMemberQueries, MemberQueries>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<INotificationJobService, NotificationJobService>();
         services.AddScoped<IProgressLogQueries, ProgressLogQueries>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ISubscriptionQueries, SubscriptionQueries>();
+        services.AddScoped<ISubscriptionJobService, SubscriptionJobService>();
         services.AddScoped<ISubscriptionRequestQueries, SubscriptionRequestQueries>();
         services.AddScoped<ITrainerQueries, TrainerQueries>();
         services.AddScoped<IWorkoutPlanQueries, WorkoutPlanQueries>();
@@ -89,7 +94,7 @@ public static class ServiceCollectionExtention
 
         services.AddRateLimitingConfig();
         services.AddMemoryCache();
-
+        services.AddBackgroundJobsConfig(configuration);
 
 
         return services;
@@ -182,6 +187,20 @@ public static class ServiceCollectionExtention
 
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
         });
+
+        return services;
+    }
+    private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Add Hangfire services.
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
+
+        // Add the processing server as IHostedService
+        services.AddHangfireServer();
 
         return services;
     }
