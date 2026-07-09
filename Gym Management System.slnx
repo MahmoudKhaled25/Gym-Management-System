@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="Gym Management System/GymManagementSystem.csproj" />
   <Project Path="GymManagementSystem.Api/GymManagementSystem.Api.csproj" Id="b1885dde-4d6d-4250-9f9e-958a70bf04ea" />
   <Project Path="GymManagementSystem.Application/GymManagementSystem.Application.csproj" Id="66c04d90-5ca9-4a2c-abb0-3cc65fb623dc" />
   <Project Path="GymManagementSystem.Domain/GymManagementSystem.Domain.csproj" Id="ca0ffd21-7aac-4f3c-ae24-9bdf8820735e" />
